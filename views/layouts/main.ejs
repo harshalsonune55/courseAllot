@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CAS Dashboard</title>
+  <link href="/css/output.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+<!-- NAVBAR -->
+<nav class="bg-white shadow-sm px-10 py-4 flex justify-between items-center">
+
+  <div class="flex items-center gap-4">
+
+    <!-- LOGO -->
+    <a href="/home" class="bg-gray-900 text-white w-10 h-10 rounded-lg flex items-center justify-center font-bold">
+      CAS
+    </a>
+
+    <div>
+      <p class="font-semibold text-gray-800">Course Allocation</p>
+    </div>
+
+    <!-- NAV LINKS -->
+    <div class="flex gap-6 ml-10 text-gray-600 font-medium">
+
+      <a href="/home"
+         class="<%= currentPage === 'dashboard' ? 'bg-blue-900 text-white px-4 py-2 rounded-lg' : 'hover:text-blue-900' %>">
+        Dashboard
+      </a>
+
+      <a href="/upload-cv"
+         class="<%= currentPage === 'upload' ? 'bg-blue-900 text-white px-4 py-2 rounded-lg' : 'hover:text-blue-900' %>">
+        Upload CV
+      </a>
+
+      <a href="/allocations"
+         class="<%= currentPage === 'allocations' ? 'bg-blue-900 text-white px-4 py-2 rounded-lg' : 'hover:text-blue-900' %>">
+        My Allocations
+      </a>
+
+      <a href="/notifications"
+         class="<%= currentPage === 'notifications' ? 'bg-blue-900 text-white px-4 py-2 rounded-lg' : 'hover:text-blue-900' %>">
+        Notifications
+      </a>
+
+      <a href="/faculty"
+         class="<%= currentPage === 'faculty' ? 'bg-blue-900 text-white px-4 py-2 rounded-lg' : 'hover:text-blue-900' %>">
+        Faculty
+      </a>
+
+    </div>
+
+  </div>
+
+  <!-- USER INFO -->
+  <div class="flex items-center gap-3">
+    <div class="w-10 h-10 bg-gray-800 text-white rounded-full flex items-center justify-center">
+      <%= data.user.name.charAt(0) %>
+    </div>
+    <div>
+      <p class="font-semibold text-gray-800"><%= data.user.name %></p>
+      <p class="text-sm text-gray-500"><%= data.user.role %></p>
+    </div>
+  </div>
+
+</nav>
+
+<%- body %>
+
+</body>
+</html>
