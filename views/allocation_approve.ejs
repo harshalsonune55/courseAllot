@@ -1,7 +1,7 @@
-<div class="p-10">
+<div class="p-12 bg-gray-100 min-h-screen">
 
     <!-- SEARCH -->
-    <div class="mb-8">
+    <div class="mb-10">
       <input
         type="text"
         placeholder="Search courses, faculty, allocations..."
@@ -11,13 +11,13 @@
   
   
     <!-- ================= PENDING REQUESTS ================= -->
-    <div class="border-2 border-gray-300 rounded-2xl p-8 mb-10">
+    <div class="border-2 border-gray-300 rounded-2xl p-10 mb-14 bg-white">
   
-      <h2 class="text-xl font-semibold mb-3">
+      <h2 class="text-2xl font-semibold mb-3">
         Pending Allocation Requests ✨
       </h2>
   
-      <p class="text-gray-600 mb-6">
+      <p class="text-gray-600 mb-8">
         Review and approve/reject allocation requests from faculty.
       </p>
   
@@ -29,40 +29,48 @@
   
       <% pending.forEach(req => { %>
   
-        <div class="bg-gray-100 p-6 rounded-xl mb-6">
+        <div class="bg-gray-50 rounded-2xl p-8 mb-8 shadow-sm">
   
-          <div class="flex justify-between items-center mb-3">
+          <!-- Header -->
+          <div class="flex justify-between items-start mb-6">
+  
             <div>
-              <h3 class="text-lg font-semibold">
+              <h3 class="text-xl font-semibold">
                 <%= req.faculty.fullName %> → <%= req.courseName %>
               </h3>
   
-              <p class="text-green-700">
-                AI Match Score: <%= req.matchScore %>%
+              <p class="text-gray-600 mt-1">
+                AI Match Score:
+                <span class="text-green-700 font-medium">
+                  <%= req.matchScore %>%
+                </span>
               </p>
   
-              <p class="text-gray-500 text-sm">
-                Requested: <%= new Date(req.createdAt).toLocaleString() %>
+              <p class="text-gray-400 text-sm mt-2">
+                Requested:
+                <%= new Date(req.requestedAt || req.createdAt).toLocaleString() %>
               </p>
             </div>
   
-            <span class="bg-blue-950 text-white px-4 py-2 rounded-full text-sm">
+            <span class="bg-gray-900 text-white px-5 py-2 rounded-full text-sm">
               PENDING
             </span>
+  
           </div>
   
-          <div class="flex gap-4">
+          <!-- Buttons -->
+          <div class="flex gap-6">
   
             <form action="/approve/<%= req._id %>" method="POST" class="flex-1">
               <button
-                class="w-full bg-green-700 text-white py-3 rounded-xl hover:bg-green-800 transition">
+                class="w-full bg-green-700 text-white py-4 rounded-xl text-lg font-medium hover:bg-green-800 transition">
                 ✔ Approve
               </button>
             </form>
   
             <form action="/reject/<%= req._id %>" method="POST" class="flex-1">
               <button
-                class="w-full bg-gray-600 text-white py-3 rounded-xl hover:bg-gray-700 transition">
+                class="w-full bg-gray-600 text-white py-4 rounded-xl text-lg font-medium hover:bg-gray-700 transition">
                 ✖ Reject
               </button>
             </form>
@@ -78,9 +86,9 @@
   
   
     <!-- ================= ALL ALLOCATIONS ================= -->
-    <div class="border-2 border-gray-300 rounded-2xl p-8">
+    <div class="border-2 border-gray-300 rounded-2xl p-10 bg-white">
   
-      <h2 class="text-xl font-semibold mb-6">
+      <h2 class="text-2xl font-semibold mb-8">
         All Allocations
       </h2>
   
@@ -90,32 +98,32 @@
   
       <% requests.forEach(req => { %>
   
-        <div class="bg-gray-100 p-6 rounded-xl mb-6 flex justify-between items-center">
+        <div class="bg-gray-50 rounded-2xl p-8 mb-6 flex justify-between items-center shadow-sm">
   
           <div>
-            <h3 class="text-lg font-semibold">
+            <h3 class="text-xl font-semibold">
               <%= req.courseName %>
             </h3>
   
-            <p class="text-gray-600">
+            <p class="text-gray-600 mt-1">
               <%= req.faculty.fullName %>
             </p>
   
-            <p class="text-green-700">
+            <p class="text-green-700 mt-2">
               AI: <%= req.matchScore %>%
             </p>
           </div>
   
           <% if(req.status === "APPROVED"){ %>
-            <span class="bg-green-700 text-white px-4 py-2 rounded-full text-sm">
+            <span class="bg-green-700 text-white px-6 py-2 rounded-full text-sm">
               APPROVED
             </span>
           <% } else if(req.status === "REJECTED"){ %>
-            <span class="bg-red-600 text-white px-4 py-2 rounded-full text-sm">
+            <span class="bg-red-600 text-white px-6 py-2 rounded-full text-sm">
               REJECTED
             </span>
           <% } else { %>
-            <span class="bg-blue-950 text-white px-4 py-2 rounded-full text-sm">
+            <span class="bg-gray-900 text-white px-6 py-2 rounded-full text-sm">
               PENDING
             </span>
           <% } %>
