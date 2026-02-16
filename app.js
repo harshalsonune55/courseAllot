@@ -406,7 +406,7 @@ app.get("/faculty-signup", (req, res) => {
 });
 
 // Faculty Signup Submit
-app.post("/faculty-signup", async (req, res) => {
+app.post("/signup-faculty", async (req, res) => {
 
     const { fullName, email, username, password, confirmPassword } = req.body;
 
