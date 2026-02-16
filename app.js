@@ -406,7 +406,7 @@ app.get("/signup-faculty", (req, res) => {
 });
 
 // Faculty Signup Submit
-app.post("/signup-faculty", async (req, res) => {
+app.post("/faculty-signup", async (req, res) => {
 
     const { fullName, email, username, password, confirmPassword } = req.body;
 
@@ -645,6 +645,18 @@ app.get("/upload-cv", isAuthenticated, async (req, res) => {
     req.session.user = updatedUser;
   
     res.redirect("/upload-cv?success=true");
+  });
+  
+
+  app.post("/save-preferences", isAuthenticated, async (req, res) => {
+
+    const { preferredCourses } = req.body;
+  
+    await User.findByIdAndUpdate(req.session.user._id, {
+      preferredCourses
+    });
+  
+    res.redirect("/home");
   });
   
   
