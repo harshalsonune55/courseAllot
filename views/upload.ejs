@@ -1,0 +1,135 @@
+<div class="px-16 py-10 bg-gray-100 min-h-screen">
+
+    <!-- SEARCH BAR -->
+    <div class="mb-8">
+      <input 
+        type="text"
+        placeholder="Search courses, faculty, allocations..."
+        class="w-full border-2 border-gray-300 rounded-xl px-6 py-4 focus:ring-2 focus:ring-blue-600 focus:outline-none"
+      />
+    </div>
+  
+    <!-- PAGE TITLE -->
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">
+      Upload CV <span class="text-green-600">✨</span>
+    </h2>
+  
+    <!-- MAIN CARD -->
+    <div class="bg-white border-2 border-gray-300 rounded-2xl p-8 shadow-sm">
+  
+      <!-- Card Header -->
+      <h3 class="text-xl font-semibold text-gray-800 mb-2">
+        AI-Powered CV Analysis <span class="text-gray-600">✨</span>
+      </h3>
+  
+      <p class="text-gray-600 mb-8">
+        Upload your CV and our AI will automatically analyze your qualifications,
+        extract skills, and recommend suitable courses.
+      </p>
+  
+      <!-- Upload Box -->
+      <div id="uploadBox"
+     class="border-2 border-dashed border-gray-300 rounded-2xl p-16 text-center transition">
+
+<!-- Icon -->
+<div id="uploadIcon"
+     class="flex justify-center mb-6 text-5xl transition
+     <%= success ? 'text-green-600' : rejected ? 'text-red-600' : 'text-gray-400' %>">
+
+  <%= success ? '✔️' : rejected ? '❌' : '⬆️' %>
+</div>
+
+
+<p id="uploadText" class="text-gray-600 mb-6">
+  <%= success 
+        ? 'CV Approved Successfully!' 
+        : rejected 
+          ? 'CV Rejected — Please upload a valid CV.' 
+          : 'Drop your CV here for AI analysis' %>
+</p>
+
+
+<% if(success){ %>
+  <div class="bg-green-100 text-green-800 p-4 rounded-xl mb-6">
+    ✅ CV Approved Successfully! <br>
+    Uploaded on:
+    <%= new Date(data.user.cvUploadedAt).toLocaleDateString() %>
+  </div>
+<% } %>
+
+<% if(rejected){ %>
+  <div class="bg-red-100 text-red-800 p-4 rounded-xl mb-6">
+    ❌ CV Rejected — The uploaded file does not appear to be a valid CV. <br>
+    Uploaded on:
+    <%= new Date(data.user.cvUploadedAt).toLocaleDateString() %>
+  </div>
+<% } %>
+
+<% if(error){ %>
+  <div class="bg-yellow-100 text-yellow-800 p-4 rounded-xl mb-6">
+    ⚠ Please upload a valid PDF file.
+  </div>
+<% } %>
+
+
+
+  <!-- Upload Form -->
+  <<form action="/upload-cv" method="POST" enctype="multipart/form-data" class="space-y-6">
+
+    <input type="file" name="cv" accept=".pdf,.doc,.docx"
+           class="hidden" id="cvInput" required>
+  
+    <!-- Upload Button (File Picker) -->
+    <label for="cvInput"
+      id="uploadBtn"
+      class="inline-block bg-green-700 text-white px-8 py-3 rounded-xl cursor-pointer hover:bg-green-800 transition">
+      Choose CV
+    </label>
+  
+    <p class="text-gray-400 text-sm">
+      Supported: PDF, DOC, DOCX (Max 10MB)
+    </p>
+  
+    <!-- ✅ SUBMIT BUTTON -->
+    <button type="submit"
+      id="submitBtn"
+      class="mt-6 bg-blue-950 text-white px-10 py-3 rounded-xl hover:bg-blue-900 transition opacity-50 cursor-not-allowed"
+      disabled>
+      ✨ Submit for AI Analysis
+    </button>
+  
+  </form>
+  
+</div>
+
+  
+    </div>
+  
+  </div>
+  <script>
+    const input = document.getElementById("cvInput");
+    const icon = document.getElementById("uploadIcon");
+    const text = document.getElementById("uploadText");
+    const box = document.getElementById("uploadBox");
+    const submitBtn = document.getElementById("submitBtn");
+  
+    input.addEventListener("change", function () {
+  
+      if (input.files.length > 0) {
+  
+        box.classList.remove("border-gray-300");
+        box.classList.add("border-green-600", "bg-green-50");
+  
+        icon.textContent = "✔️";
+        icon.classList.remove("text-gray-400");
+        icon.classList.add("text-green-600");
+  
+        text.textContent = input.files[0].name;
+  
+        submitBtn.disabled = false;
+        submitBtn.classList.remove("opacity-50", "cursor-not-allowed");
+      }
+    });
+  </script>
+  
+  

@@ -1,0 +1,115 @@
+<div class="p-10">
+
+    <!-- Search -->
+    <div class="mb-8">
+      <input
+        type="text"
+        placeholder="Search courses, faculty, allocations..."
+        class="w-full border-2 border-gray-300 rounded-xl px-6 py-4 focus:ring-2 focus:ring-blue-600 focus:outline-none"
+      />
+    </div>
+  
+    <!-- Title -->
+    <h2 class="text-2xl font-bold mb-8">
+      AI Dashboard ✨
+    </h2>
+  
+    <!-- ================= STATS CARDS ================= -->
+    <div class="grid grid-cols-2 gap-6 mb-10">
+  
+      <div class="bg-green-800 text-white p-8 rounded-2xl">
+        <p class="text-lg">Courses</p>
+        <h3 class="text-3xl font-bold mt-2">
+          <%= requests.length %>
+        </h3>
+      </div>
+  
+      <div class="bg-green-800 text-white p-8 rounded-2xl">
+        <p class="text-lg">Faculty</p>
+        <h3 class="text-3xl font-bold mt-2">
+          <%= new Set(requests.map(r => r.faculty._id.toString())).size %>
+        </h3>
+      </div>
+  
+      <div class="bg-green-800 text-white p-8 rounded-2xl">
+        <p class="text-lg">AI Matches</p>
+        <h3 class="text-3xl font-bold mt-2">
+          <%= requests.length %>
+        </h3>
+      </div>
+  
+      <div class="bg-green-800 text-white p-8 rounded-2xl">
+        <p class="text-lg">Pending</p>
+        <h3 class="text-3xl font-bold mt-2">
+          <%= requests.filter(r => r.status === "PENDING").length %>
+        </h3>
+      </div>
+  
+    </div>
+  
+    <!-- ================= AI RECOMMENDATIONS ================= -->
+    <div class="border-2 border-gray-300 rounded-2xl p-8">
+  
+      <h3 class="text-xl font-semibold mb-6">
+        AI Recommendations ✨
+      </h3>
+  
+      <% if (requests.length === 0) { %>
+        <p class="text-gray-600">No allocation requests yet.</p>
+      <% } %>
+  
+      <% requests.forEach(req => { %>
+  
+        <div class="bg-gray-100 rounded-xl p-6 mb-4 flex justify-between items-center">
+  
+          <div>
+            <h4 class="text-lg font-semibold">
+              <%= req.faculty.fullName %> → <%= req.courseName %>
+            </h4>
+  
+            <p class="text-green-700 mt-1">
+              AI: <%= req.matchScore %>%
+            </p>
+          </div>
+  
+          <!-- STATUS / ACTIONS -->
+          <% if (req.status === "PENDING") { %>
+  
+            <div class="flex gap-4">
+  
+              <form action="/approve/<%= req._id %>" method="POST">
+                <button class="bg-green-700 text-white px-6 py-2 rounded-xl hover:bg-green-800">
+                  ✔ Approve
+                </button>
+              </form>
+  
+              <form action="/reject/<%= req._id %>" method="POST">
+                <button class="bg-gray-600 text-white px-6 py-2 rounded-xl hover:bg-gray-700">
+                  ✖ Reject
+                </button>
+              </form>
+  
+            </div>
+  
+          <% } else if (req.status === "APPROVED") { %>
+  
+            <span class="bg-green-700 text-white px-6 py-2 rounded-full text-sm">
+              APPROVED
+            </span>
+  
+          <% } else { %>
+  
+            <span class="bg-blue-950 text-white px-6 py-2 rounded-full text-sm">
+              REJECTED
+            </span>
+  
+          <% } %>
+  
+        </div>
+  
+      <% }) %>
+  
+    </div>
+  
+  </div>
+  

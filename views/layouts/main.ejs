@@ -45,29 +45,224 @@
         Notifications
       </a>
 
-      <a href="/faculty"
-         class="<%= currentPage === 'faculty' ? 'bg-blue-900 text-white px-4 py-2 rounded-lg' : 'hover:text-blue-900' %>">
-        Faculty
-      </a>
+
 
     </div>
 
   </div>
 
   <!-- USER INFO -->
-  <div class="flex items-center gap-3">
-    <div class="w-10 h-10 bg-gray-800 text-white rounded-full flex items-center justify-center">
-      <%= data.user.name.charAt(0) %>
-    </div>
-    <div>
-      <p class="font-semibold text-gray-800"><%= data.user.name %></p>
-      <p class="text-sm text-gray-500"><%= data.user.role %></p>
-    </div>
+  <div onclick="openProfileModal()" 
+     class="flex items-center gap-3 cursor-pointer hover:bg-gray-100 px-4 py-2 rounded-xl transition">
+
+  <div class="w-10 h-10 bg-blue-950 text-white rounded-full flex items-center justify-center">
+    👤
   </div>
+
+  <div>
+    <p class="font-semibold text-gray-800"><%= data.user.name %></p>
+    <p class="text-sm text-gray-500"><%= data.user.role %></p>
+  </div>
+
+</div>
+
 
 </nav>
 
 <%- body %>
 
+<!-- PROFILE MODAL -->
+<div id="profileModal" 
+     class="fixed inset-0 backdrop-blur-sm flex items-center justify-center hidden z-50">
+
+     <div class="bg-white w-[480px] rounded-2xl shadow-xl p-6 relative">
+
+
+    <!-- Close Button -->
+    <button onclick="closeProfileModal()" 
+      class="absolute top-6 right-6 text-gray-500 text-2xl hover:text-black">
+      ×
+    </button>
+
+    <!-- Title -->
+    <h2 class="text-2xl font-semibold mb-8">
+      Profile Details
+    </h2>
+
+    <!-- Avatar -->
+    <div class="flex flex-col items-center mb-8">
+      <div class="w-24 h-24 bg-green-700 rounded-full flex items-center justify-center text-white text-4xl">
+        👤
+      </div>
+
+      <h3 class="text-xl font-semibold mt-4">
+        <%= data.user.name %>
+      </h3>
+
+      <p class="text-green-700">
+        <%= data.user.role %>
+      </p>
+    </div>
+
+    <!-- Details -->
+    <div class="space-y-6 text-gray-700">
+
+      <div class="flex justify-between border-b pb-3">
+        <span>Email</span>
+        <span>smith@univ.edu</span>
+      </div>
+
+      <div class="flex justify-between border-b pb-3">
+        <span>Department</span>
+        <span>Computer Science</span>
+      </div>
+
+      <div class="flex justify-between border-b pb-3">
+        <span>Phone</span>
+        <span>+1 234 567 890</span>
+      </div>
+
+      <div class="flex justify-between border-b pb-3">
+        <span>Member Since</span>
+        <span>2020-01-15</span>
+      </div>
+
+    </div>
+
+    <!-- Buttons -->
+<div class="flex flex-col gap-4 mt-10">
+
+  <div class="flex gap-6">
+    <button onclick="openEditProfile()" 
+      class="w-1/2 bg-gray-200 py-4 rounded-2xl font-medium hover:bg-gray-300">
+      Edit Profile
+    </button>
+
+    <button onclick="closeProfileModal()" 
+      class="w-1/2 bg-green-700 text-white py-4 rounded-2xl font-medium hover:bg-green-800">
+      Close
+    </button>
+  </div>
+
+  <!-- 🔥 LOGOUT BUTTON -->
+  <a href="/logout"
+     class="w-full bg-red-600 text-white py-4 rounded-2xl text-lg font-medium text-center hover:bg-red-700 transition">
+    Logout
+  </a>
+
+</div>
+
+
+  </div>
+</div>
+
+
+<!-- EDIT PROFILE MODAL -->
+<div id="editProfileModal" 
+     class="fixed inset-0 backdrop-blur-sm flex items-center justify-center hidden z-50">
+
+     <div class="bg-white w-[520px] rounded-2xl shadow-xl p-6 relative">
+
+
+    <!-- Close -->
+    <button onclick="closeEditProfile()" 
+      class="absolute top-6 right-6 text-gray-500 text-2xl hover:text-black">
+      ×
+    </button>
+
+    <!-- Title -->
+    <h2 class="text-2xl font-semibold mb-6">
+      Edit Profile
+    </h2>
+
+    <!-- Avatar -->
+    <div class="flex justify-center mb-6">
+      <div class="w-28 h-28 bg-green-700 rounded-full flex items-center justify-center text-white text-4xl">
+        👤
+      </div>
+    </div>
+
+    <!-- Form -->
+    <form action="/update-profile" method="POST" class="space-y-6">
+
+      <!-- Full Name -->
+      <div>
+        <label class="block text-lg mb-2">Full Name</label>
+        <input type="text" name="fullName" 
+          value="<%= data.user.name %>"
+          class="w-full border-2 border-gray-300 rounded-2xl px-6 py-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+      </div>
+
+      <!-- Email -->
+      <div>
+        <label class="block text-lg mb-2">Email</label>
+        <input type="email" name="email" 
+          value="smith@univ.edu"
+          class="w-full border-2 border-gray-300 rounded-2xl px-6 py-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+      </div>
+
+      <!-- Department -->
+      <div>
+        <label class="block text-lg mb-2">Department</label>
+        <input type="text" name="department" 
+          value="Computer Science"
+          class="w-full border-2 border-gray-300 rounded-2xl px-6 py-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+      </div>
+
+      <!-- Phone -->
+      <div>
+        <label class="block text-lg mb-2">Phone</label>
+        <input type="text" name="phone" 
+          value="+1 234 567 890"
+          class="w-full border-2 border-gray-300 rounded-2xl px-6 py-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex gap-6 mt-10">
+
+        <button type="button" onclick="closeEditProfile()"
+          class="w-1/2 border-2 border-blue-600 text-gray-700 py-4 rounded-2xl text-lg font-medium hover:bg-blue-50">
+          Cancel
+        </button>
+
+        <button type="submit"
+          class="w-1/2 bg-green-700 text-white py-4 rounded-2xl text-lg font-medium hover:bg-green-800">
+          Save Changes
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+<script>
+  const profileModal = document.getElementById("profileModal");
+  const editModal = document.getElementById("editProfileModal");
+
+  function openProfileModal() {
+    profileModal.classList.remove("hidden");
+  }
+
+  function closeProfileModal() {
+    profileModal.classList.add("hidden");
+  }
+
+  function openEditProfile() {
+    profileModal.classList.add("hidden");
+    editModal.classList.remove("hidden");
+  }
+
+  function closeEditProfile() {
+    editModal.classList.add("hidden");
+  }
+</script>
+
+
+
+
 </body>
 </html>
+
+

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Faculty Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-200 flex items-center justify-center min-h-screen">
+
+  <div class="bg-white w-[520px] rounded-3xl shadow-xl p-12">
+
+    <div class="flex justify-center mb-6">
+      <div class="bg-green-800 w-28 h-28 rounded-3xl flex items-center justify-center text-white text-3xl">
+        🎓
+      </div>
+    </div>
+
+    <h1 class="text-3xl font-bold text-center mb-2">CAS</h1>
+    <p class="text-center text-gray-500 mb-10 text-lg">
+      Login as Faculty / Instructor
+    </p>
+
+    <% if (error) { %>
+      <div class="bg-red-100 text-red-700 p-3 rounded-lg mb-6 text-sm">
+        <%= error %>
+      </div>
+    <% } %>
+
+    <form action="/login-faculty" method="POST">
+
+      <div class="mb-6">
+        <label class="block text-lg font-semibold mb-2">Username</label>
+        <input type="text" name="username" required
+          class="w-full border-2 border-gray-800 rounded-2xl px-6 py-4">
+      </div>
+
+      <div class="mb-8">
+        <label class="block text-lg font-semibold mb-2">Password</label>
+        <input type="password" name="password" required
+          class="w-full border-2 border-gray-800 rounded-2xl px-6 py-4">
+      </div>
+
+      <button type="submit"
+        class="w-full bg-blue-950 text-white py-4 rounded-2xl text-lg font-medium hover:bg-blue-900 transition">
+        Sign In
+      </button>
+
+    </form>
+
+    <!-- Signup Section -->
+    <div class="mt-8 text-center text-gray-600">
+      Not registered?
+      <a href="/signup-faculty"
+         class="text-blue-900 font-semibold hover:underline ml-1">
+        Create an account
+      </a>
+    </div>
+
+  </div>
+
+</body>
+</html>

@@ -10,9 +10,16 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "connect-mongo": "^6.0.0",
+    "dotenv": "^17.3.1",
     "ejs": "^4.0.1",
     "ejs-mate": "^4.0.0",
     "express": "^5.2.1",
-    "express-ejs-layouts": "^2.5.1"
+    "express-ejs-layouts": "^2.5.1",
+    "express-session": "^1.19.0",
+    "mongoose": "^9.2.1",
+    "multer": "^2.0.2",
+    "pdf-parse": "^1.1.1"
   }
 }

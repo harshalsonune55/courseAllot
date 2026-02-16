@@ -3,72 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <title>CAS - Course Allocation System</title>
-  <link href="/css/output.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
+<body class="bg-gray-200 flex items-center justify-center min-h-screen">
 
-<body class="bg-gray-200 min-h-screen flex items-center justify-center">
+  <div class="bg-white w-[500px] rounded-3xl shadow-xl p-10 text-center">
 
-  <div class="bg-white w-[480px] rounded-3xl shadow-xl p-10 text-center">
-
-    <!-- LOGO -->
+    <!-- Logo -->
     <div class="flex justify-center mb-6">
-      <div class="bg-green-700 w-20 h-20 rounded-2xl flex items-center justify-center shadow-md">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
+      <div class="bg-green-800 w-24 h-24 rounded-2xl flex items-center justify-center text-white text-3xl">
+        🎓
       </div>
     </div>
 
-    <!-- TITLE -->
-    <h1 class="text-3xl font-bold text-gray-800">CAS</h1>
-    <p class="text-gray-500 mt-2 mb-8">Course Allocation System</p>
+    <!-- Title -->
+    <h1 class="text-3xl font-bold text-gray-900">CAS</h1>
+    <p class="text-gray-500 mt-2 mb-10 text-lg">
+      Course Allocation System
+    </p>
 
-    <!-- BUTTONS -->
-    <div class="space-y-4">
+    <!-- Faculty Button -->
+    <a href="/faculty-login"
+       class="block bg-blue-950 text-white py-4 rounded-xl text-lg font-medium mb-5 hover:bg-blue-900 transition">
+      👤 Faculty / Instructor →
+    </a>
 
-      <!-- Faculty -->
-      <a href="/faculty"
-         class="flex items-center justify-between bg-blue-950 text-white px-6 py-4 rounded-xl hover:bg-blue-900 transition">
+    <!-- HOD Button -->
+    <a href="/hod-login"
 
-        <div class="flex items-center gap-3">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M5.121 17.804A9 9 0 1112 21a9 9 0 01-6.879-3.196z" />
-          </svg>
-          <span class="text-lg font-medium">Faculty / Instructor</span>
-        </div>
+       class="block bg-blue-950 text-white py-4 rounded-xl text-lg font-medium hover:bg-blue-900 transition">
+      👥 Head of Department →
+    </a>
 
-        <span>›</span>
-      </a>
-
-      <!-- HOD -->
-      <a href="/hod"
-         class="flex items-center justify-between bg-blue-950 text-white px-6 py-4 rounded-xl hover:bg-blue-900 transition">
-
-        <div class="flex items-center gap-3">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M17 20h5V4H2v16h5m10 0v-4a4 4 0 00-8 0v4m8 0H9" />
-          </svg>
-          <span class="text-lg font-medium">Head of Department</span>
-        </div>
-
-        <span>›</span>
-      </a>
-
-    </div>
-
-    <!-- AI INFO BOX -->
-    <div class="mt-6 bg-gray-100 border border-gray-200 rounded-xl py-4 px-6 text-gray-600 flex items-center justify-center gap-2">
-
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M13 16h-1v-4h-1m1-4h.01M12 18h.01" />
-      </svg>
-
-      <span class="text-sm">AI-powered intelligent matching</span>
-
+    <!-- AI Footer -->
+    <div class="mt-10 bg-gray-100 border rounded-xl py-4 text-gray-600">
+      ✨ AI-powered intelligent matching
     </div>
 
   </div>
