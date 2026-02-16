@@ -8,12 +8,12 @@
 </head>
 <body class="bg-gray-100 font-sans">
 
-<!-- NAVBAR -->
+
 <nav class="bg-white shadow-sm px-10 py-4 flex justify-between items-center">
 
   <div class="flex items-center gap-4">
 
-    <!-- LOGO -->
+
     <a href="/home" class="bg-gray-900 text-white w-10 h-10 rounded-lg flex items-center justify-center font-bold">
       CAS
     </a>
@@ -22,7 +22,7 @@
       <p class="font-semibold text-gray-800">Course Allocation</p>
     </div>
 
-    <!-- NAV LINKS -->
+    
     <div class="flex gap-6 ml-10 text-gray-600 font-medium">
 
       <a href="/home"
@@ -51,7 +51,7 @@
 
   </div>
 
-  <!-- USER INFO -->
+
   <div onclick="openProfileModal()" 
      class="flex items-center gap-3 cursor-pointer hover:bg-gray-100 px-4 py-2 rounded-xl transition">
 
@@ -71,25 +71,24 @@
 
 <%- body %>
 
-<!-- PROFILE MODAL -->
+
 <div id="profileModal" 
      class="fixed inset-0 backdrop-blur-sm flex items-center justify-center hidden z-50">
 
      <div class="bg-white w-[480px] rounded-2xl shadow-xl p-6 relative">
 
 
-    <!-- Close Button -->
     <button onclick="closeProfileModal()" 
       class="absolute top-6 right-6 text-gray-500 text-2xl hover:text-black">
       ×
     </button>
 
-    <!-- Title -->
+    
     <h2 class="text-2xl font-semibold mb-8">
       Profile Details
     </h2>
 
-    <!-- Avatar -->
+    
     <div class="flex flex-col items-center mb-8">
       <div class="w-24 h-24 bg-green-700 rounded-full flex items-center justify-center text-white text-4xl">
         👤
@@ -104,7 +103,7 @@
       </p>
     </div>
 
-    <!-- Details -->
+   
     <div class="space-y-6 text-gray-700">
 
       <div class="flex justify-between border-b pb-3">
@@ -129,7 +128,7 @@
 
     </div>
 
-    <!-- Buttons -->
+  
 <div class="flex flex-col gap-4 mt-10">
 
   <div class="flex gap-6">
@@ -144,7 +143,7 @@
     </button>
   </div>
 
-  <!-- 🔥 LOGOUT BUTTON -->
+  
   <a href="/logout"
      class="w-full bg-red-600 text-white py-4 rounded-2xl text-lg font-medium text-center hover:bg-red-700 transition">
     Logout
@@ -157,35 +156,35 @@
 </div>
 
 
-<!-- EDIT PROFILE MODAL -->
+
 <div id="editProfileModal" 
      class="fixed inset-0 backdrop-blur-sm flex items-center justify-center hidden z-50">
 
      <div class="bg-white w-[520px] rounded-2xl shadow-xl p-6 relative">
 
 
-    <!-- Close -->
+   
     <button onclick="closeEditProfile()" 
       class="absolute top-6 right-6 text-gray-500 text-2xl hover:text-black">
       ×
     </button>
 
-    <!-- Title -->
+    
     <h2 class="text-2xl font-semibold mb-6">
       Edit Profile
     </h2>
 
-    <!-- Avatar -->
+
     <div class="flex justify-center mb-6">
       <div class="w-28 h-28 bg-green-700 rounded-full flex items-center justify-center text-white text-4xl">
         👤
       </div>
     </div>
 
-    <!-- Form -->
+  
     <form action="/update-profile" method="POST" class="space-y-6">
 
-      <!-- Full Name -->
+      
       <div>
         <label class="block text-lg mb-2">Full Name</label>
         <input type="text" name="fullName" 
@@ -193,7 +192,7 @@
           class="w-full border-2 border-gray-300 rounded-2xl px-6 py-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
       </div>
 
-      <!-- Email -->
+    
       <div>
         <label class="block text-lg mb-2">Email</label>
         <input type="email" name="email" 
@@ -201,7 +200,7 @@
           class="w-full border-2 border-gray-300 rounded-2xl px-6 py-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
       </div>
 
-      <!-- Department -->
+  
       <div>
         <label class="block text-lg mb-2">Department</label>
         <input type="text" name="department" 
@@ -209,7 +208,7 @@
           class="w-full border-2 border-gray-300 rounded-2xl px-6 py-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
       </div>
 
-      <!-- Phone -->
+    
       <div>
         <label class="block text-lg mb-2">Phone</label>
         <input type="text" name="phone" 
@@ -217,7 +216,6 @@
           class="w-full border-2 border-gray-300 rounded-2xl px-6 py-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
       </div>
 
-      <!-- Buttons -->
       <div class="flex gap-6 mt-10">
 
         <button type="button" onclick="closeEditProfile()"

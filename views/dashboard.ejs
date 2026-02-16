@@ -1,6 +1,6 @@
 <div class="px-16 py-10">
 
-  <!-- SEARCH -->
+  
   <div class="mb-8">
     <input 
       type="text"
@@ -9,14 +9,12 @@
     />
   </div>
 
-  <!-- TITLE -->
+
   <h2 class="text-2xl font-bold text-gray-800 mb-8">
     AI Dashboard ✨
   </h2>
 
-  <!-- ===================== -->
-  <!-- STATS SECTION -->
-  <!-- ===================== -->
+
 
   <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
 
@@ -40,9 +38,7 @@
   </div>
 
 
-  <!-- ===================== -->
-  <!-- AI RECOMMENDATIONS -->
-  <!-- ===================== -->
+
 
   <div class="bg-white rounded-2xl p-8 shadow border border-gray-200">
 
@@ -54,7 +50,7 @@
 
       <% data.recommendations.forEach(course => { 
 
-          // 🔥 Check if this course has a real request
+    
           const realRequest = data.requests.find(r => r.courseName === course.course);
       %>
 

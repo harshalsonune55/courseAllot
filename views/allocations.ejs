@@ -1,6 +1,6 @@
 <div class="px-16 py-10 bg-gray-100 min-h-screen">
 
-    <!-- SEARCH -->
+   
     <div class="mb-8">
       <input 
         type="text"
@@ -9,7 +9,7 @@
       />
     </div>
   
-    <!-- REQUEST NEW ALLOCATION -->
+
     <div class="bg-blue-950 text-white rounded-2xl p-8 flex justify-between items-center mb-10">
       <div>
         <h2 class="text-2xl font-semibold">Request New Allocation</h2>
@@ -24,14 +24,13 @@
 
     </div>
   
-    <!-- MAIN CARD -->
+
     <div class="bg-white border-2 border-gray-300 rounded-2xl p-8 shadow-sm">
   
       <h3 class="text-xl font-semibold mb-6 text-gray-800">
         My Course Allocations & Preferences
       </h3>
-  
-<!-- AI Generated Allocations -->
+
 <div class="mb-10">
 
     <% if (data.recommendations && data.recommendations.length > 0) { %>
@@ -91,8 +90,7 @@
   
       <hr class="my-8">
   
-      <!-- AVAILABLE COURSES -->
-    <!-- AVAILABLE COURSES -->
+
     <div>
       <h4 class="text-lg font-semibold text-gray-800 mb-6">
         ✨ AI Suggested Courses (Based on Your CV)
@@ -155,8 +153,7 @@
 
 
 </div>
-<!-- REQUEST COURSE MODAL -->
-<!-- REQUEST COURSE MODAL -->
+
 <div id="requestModal"
      class="fixed inset-0 flex items-center justify-center hidden z-50">
 
@@ -175,7 +172,7 @@
       ✨ AI will calculate your compatibility score with the course
     </div>
 
-    <!-- IMPORTANT: ADD FORM -->
+  
     <form action="/request-course" method="POST">
 
       <div class="mb-8">
@@ -195,7 +192,7 @@
         </select>
       </div>
 
-      <!-- Hidden Score Field -->
+  
       <input type="hidden" name="score" id="aiScoreInput">
 
 
@@ -223,7 +220,7 @@
   
 </div>
   
-  <!-- SCRIPT -->
+ 
   <script>
     const checkboxes = document.querySelectorAll('.course-checkbox');
     const cards = document.querySelectorAll('.course-card');
@@ -301,7 +298,7 @@
       if (found) {
         scoreInput.value = found.score;
       } else {
-        scoreInput.value = 50; // fallback if not AI suggested
+        scoreInput.value = 50; 
       }
     });
   </script>

@@ -18,16 +18,12 @@ const User = require("./models/User");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-/* =============================
-   MONGODB CONNECTION
-============================= */
+
 mongoose.connect(process.env.MONGO_URL)
     .then(() => console.log("✅ MongoDB Atlas Connected"))
     .catch(err => console.log("Mongo Error:", err));
 
-/* =============================
-   ENSURE UPLOADS FOLDER EXISTS
-============================= */
+
 const uploadPath = path.join(__dirname, "uploads");
 
 if (!fs.existsSync(uploadPath)) {
@@ -35,9 +31,7 @@ if (!fs.existsSync(uploadPath)) {
 }
 
 
-/* =============================
-   MIDDLEWARE
-============================= */
+
 app.use(express.urlencoded({ extended: true }));
 
 app.use(session({
@@ -49,9 +43,7 @@ app.use(session({
     })
 }));
 
-/* =============================
-   MULTER CONFIG
-============================= */
+
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, uploadPath);
@@ -62,34 +54,95 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-/* =============================
-   VIEW ENGINE
-============================= */
+
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(expressLayouts);
 app.set("layout", "layouts/main");
 app.use(express.static(path.join(__dirname, "public")));
 
-/* =============================
-   AUTH MIDDLEWARE
-============================= */
+
+
 function isAuthenticated(req, res, next) {
     if (!req.session.user) return res.redirect("/");
     next();
 }
 
-/* =============================
-   COURSE MATCHING LOGIC
-============================= */
+
 function matchCourses(cvText) {
 
     const courses = [
-        { name: "Machine Learning", keywords: ["python", "machine learning", "tensorflow", "pytorch"] },
-        { name: "Data Structures", keywords: ["algorithms", "data structures", "c++", "java"] },
-        { name: "Database Management", keywords: ["sql", "database", "mysql", "mongodb"] },
-        { name: "Computer Networks", keywords: ["network", "tcp", "udp", "routing"] }
-    ];
+     
+        {
+          name: "Machine Learning",
+          category: "Technical",
+          keywords: ["python", "machine learning", "tensorflow", "pytorch", "ai", "data science"]
+        },
+        {
+          name: "Data Structures",
+          category: "Technical",
+          keywords: ["algorithms", "data structures", "c++", "java"]
+        },
+        {
+          name: "Database Management",
+          category: "Technical",
+          keywords: ["sql", "database", "mysql", "mongodb"]
+        },
+        {
+          name: "Computer Networks",
+          category: "Technical",
+          keywords: ["network", "tcp", "udp", "routing"]
+        },
+      
+  
+        {
+          name: "Project Management",
+          category: "Management",
+          keywords: ["project management", "planning", "scrum", "agile", "leadership"]
+        },
+        {
+          name: "Entrepreneurship",
+          category: "Management",
+          keywords: ["startup", "business", "entrepreneur", "innovation"]
+        },
+      
+
+        {
+          name: "Technical Communication",
+          category: "Humanities",
+          keywords: ["communication", "presentation", "technical writing"]
+        },
+        {
+          name: "Professional Ethics",
+          category: "Humanities",
+          keywords: ["ethics", "professional ethics", "compliance"]
+        },
+      
+   
+        {
+          name: "Engineering Mathematics",
+          category: "Mathematics",
+          keywords: ["calculus", "linear algebra", "probability", "statistics"]
+        },
+        {
+          name: "Applied Physics",
+          category: "Science",
+          keywords: ["physics", "mechanics", "thermodynamics"]
+        },
+      
+       
+        {
+          name: "Leadership & Team Management",
+          category: "Soft Skills",
+          keywords: ["leadership", "team management", "coordination"]
+        },
+        {
+          name: "Research Methodology",
+          category: "Academic",
+          keywords: ["research", "publications", "journal", "conference"]
+        }
+      ];
+      
 
     cvText = cvText.toLowerCase();
     let matches = [];
@@ -104,7 +157,7 @@ function matchCourses(cvText) {
         if (score > 0) {
             matches.push({
                 course: course.name,
-                matchScore: score * 25   // convert to percentage style
+                matchScore: score * 25   
             });
         }
     });
@@ -117,20 +170,37 @@ function parseCV(cvText) {
     cvText = cvText.toLowerCase();
 
     const skillKeywords = [
+     
         "python", "java", "c++", "machine learning",
         "sql", "mongodb", "data structures",
-        "tensorflow", "network", "algorithms"
-    ];
+        "tensorflow", "network", "algorithms",
+      
+    
+        "project management", "agile", "scrum", "leadership",
+      
+
+        "communication", "technical writing", "presentation",
+      
+      
+        "calculus", "statistics", "linear algebra",
+      
+        
+        "research", "publications", "conference", "journal",
+      
+       
+        "entrepreneur", "startup", "innovation"
+      ];
+      
 
     let extractedSkills = skillKeywords.filter(skill =>
         cvText.includes(skill)
     );
 
-    // Extract experience years
+   
     let experienceMatch = cvText.match(/(\d+)\s+years?/);
     let experienceYears = experienceMatch ? parseInt(experienceMatch[1]) : 0;
 
-    // Extract education (simple version)
+ 
     let education = "Unknown";
     if (cvText.includes("phd")) education = "PhD";
     else if (cvText.includes("master")) education = "Masters";
@@ -163,60 +233,126 @@ function isValidCV(cvText) {
       if (cvText.includes(word)) score++;
     });
   
-    return score >= 2; // minimum requirement
+    return score >= 2; 
   }
   
   
 
 
-function generateRecommendations(parsedData) {
+  function generateRecommendations(parsedData) {
 
     const courses = [
-        { name: "Machine Learning", keywords: ["python", "machine learning", "tensorflow"] },
-        { name: "Data Structures", keywords: ["algorithms", "data structures", "c++", "java"] },
-        { name: "Database Management", keywords: ["sql", "mongodb"] },
-        { name: "Computer Networks", keywords: ["network"] }
-    ];
+       
+        {
+          name: "Machine Learning",
+          category: "Technical",
+          keywords: ["python", "machine learning", "tensorflow", "pytorch", "ai", "data science"]
+        },
+        {
+          name: "Data Structures",
+          category: "Technical",
+          keywords: ["algorithms", "data structures", "c++", "java"]
+        },
+        {
+          name: "Database Management",
+          category: "Technical",
+          keywords: ["sql", "database", "mysql", "mongodb"]
+        },
+        {
+          name: "Computer Networks",
+          category: "Technical",
+          keywords: ["network", "tcp", "udp", "routing"]
+        },
+      
+ 
+        {
+          name: "Project Management",
+          category: "Management",
+          keywords: ["project management", "planning", "scrum", "agile", "leadership"]
+        },
+        {
+          name: "Entrepreneurship",
+          category: "Management",
+          keywords: ["startup", "business", "entrepreneur", "innovation"]
+        },
+      
 
-    let recommendations = [];
-
-    courses.forEach(course => {
-
-        let score = 0;
-
-        course.keywords.forEach(keyword => {
-            if (parsedData.skills.includes(keyword)) {
-                score += 30;
-            }
-        });
-
-        // Bonus for experience
-        if (parsedData.experienceYears > 5) score += 20;
-
-        if (score > 0) {
-            recommendations.push({
-                course: course.name,
-                score: Math.min(score, 100),
-                status: "PENDING"
-            });
+        {
+          name: "Technical Communication",
+          category: "Humanities",
+          keywords: ["communication", "presentation", "technical writing"]
+        },
+        {
+          name: "Professional Ethics",
+          category: "Humanities",
+          keywords: ["ethics", "professional ethics", "compliance"]
+        },
+      
+  
+        {
+          name: "Engineering Mathematics",
+          category: "Mathematics",
+          keywords: ["calculus", "linear algebra", "probability", "statistics"]
+        },
+        {
+          name: "Applied Physics",
+          category: "Science",
+          keywords: ["physics", "mechanics", "thermodynamics"]
+        },
+      
+  
+        {
+          name: "Leadership & Team Management",
+          category: "Soft Skills",
+          keywords: ["leadership", "team management", "coordination"]
+        },
+        {
+          name: "Research Methodology",
+          category: "Academic",
+          keywords: ["research", "publications", "journal", "conference"]
         }
-
+      ];
+      
+  
+    let recommendations = [];
+  
+    courses.forEach(course => {
+  
+      let score = 0;
+  
+      course.keywords.forEach(keyword => {
+        if (parsedData.skills.includes(keyword)) {
+          score += 20;
+        }
+      });
+  
+    
+      if (parsedData.experienceYears >= 3) score += 10;
+      if (parsedData.experienceYears >= 7) score += 20;
+  
+      if (score > 0) {
+        recommendations.push({
+          course: course.name,
+          category: course.category,
+          score: Math.min(score, 100),
+          status: "PENDING"
+        });
+      }
     });
-
+  
     return recommendations.sort((a, b) => b.score - a.score);
-}
+  }
+  
 
 
-/* =============================
-   ROUTES
-============================= */
+
 app.post("/request-course", isAuthenticated, async (req, res) => {
 
     const { courseName } = req.body;
   
     const user = await User.findById(req.session.user._id);
   
-    // Check existing
+  
     const existing = await CourseRequest.findOne({
       faculty: user._id,
       courseName,
@@ -227,7 +363,7 @@ app.post("/request-course", isAuthenticated, async (req, res) => {
       return res.redirect("/allocations");
     }
   
-    // 🔥 Get AI score dynamically
+  
     const recommendation = user.recommendedCourses.find(
       r => r.course === courseName
     );
@@ -305,11 +441,11 @@ app.post("/request-course", isAuthenticated, async (req, res) => {
   
     const requests = await CourseRequest
       .find()
-      .populate("faculty");   // 🔥 VERY IMPORTANT
+      .populate("faculty");   
   
     res.render("hod-dashboard", {
       layout: "layouts/hod-layout",
-      requests,               // 👈 must pass this
+      requests,               
       currentPage: "dashboard",
       data: {
         user: {
@@ -353,7 +489,7 @@ app.post("/request-course", isAuthenticated, async (req, res) => {
   
     
 
-// Login Page
+
 
 app.get("/", (req, res) => {
     res.render("index", { layout: false });
@@ -361,12 +497,12 @@ app.get("/", (req, res) => {
 
 
 
-// Faculty Login Page
+
 app.get("/faculty-login", (req, res) => {
     res.render("login-faculty", { layout: false, error: null });
 });
 
-// Faculty Login Submit
+
 app.post("/login-faculty", async (req, res) => {
 
     const { username, password } = req.body;
@@ -386,12 +522,11 @@ app.post("/login-faculty", async (req, res) => {
     res.redirect("/home");
 });
  
-// HOD Login Page
+
 app.get("/hod-login", (req, res) => {
     res.render("login-hod", { layout: false, error: null });
 });
 
-// HOD Login Submit
 app.post("/login-hod", async (req, res) => {
 
     const { username, password } = req.body;
@@ -408,16 +543,16 @@ app.post("/login-hod", async (req, res) => {
     }
 
     req.session.user = user;
-    res.redirect("/hod-dashboard");  // IMPORTANT
+    res.redirect("/hod-dashboard");  
 });
 
 
-// Faculty Signup Page
+
 app.get("/signup-faculty", (req, res) => {
     res.render("signup-faculty", { layout: false, error: null });
 });
 
-// Faculty Signup Submit
+
 app.post("/faculty-signup", async (req, res) => {
 
     const { fullName, email, username, password, confirmPassword } = req.body;
@@ -448,12 +583,12 @@ app.post("/faculty-signup", async (req, res) => {
 });
 
 
-// HOD Signup Page
+
 app.get("/hod-signup", (req, res) => {
     res.render("signup-hod", { layout: false, error: null });
 });
 
-// HOD Signup Submit
+
 app.post("/hod-signup", async (req, res) => {
 
     const { fullName, email, username, password, confirmPassword } = req.body;
@@ -486,12 +621,12 @@ app.post("/hod-signup", async (req, res) => {
 
 
 
-// Dashboard
+
 app.get("/home", isAuthenticated, async (req, res) => {
 
     const user = req.session.user;
   
-    // 🔥 Get all requests made by this faculty
+   
     const requests = await CourseRequest.find({
       faculty: user._id
     });
@@ -526,12 +661,12 @@ app.get("/home", isAuthenticated, async (req, res) => {
 
 
 
-// Allocations
+
 app.get("/allocations", isAuthenticated, async (req, res) => {
 
     const user = req.session.user;
   
-    // 🔥 Fetch real requests from DB
+
     const requests = await CourseRequest.find({
       faculty: user._id
     });
@@ -551,7 +686,7 @@ app.get("/allocations", isAuthenticated, async (req, res) => {
   
 
 
-// Notifications
+
 app.get("/notifications", isAuthenticated, async (req, res) => {
 
     const requests = await CourseRequest.find({
@@ -572,7 +707,7 @@ app.get("/notifications", isAuthenticated, async (req, res) => {
   });
   
 
-// Update Profile
+
 app.post("/update-profile", isAuthenticated, async (req, res) => {
 
     const { fullName, email, department, phone } = req.body;
@@ -668,7 +803,7 @@ app.get("/upload-cv", isAuthenticated, async (req, res) => {
       return res.redirect("/allocations");
     }
   
-    // If only one selected, convert to array
+
     if (!Array.isArray(selectedCourses)) {
       selectedCourses = [selectedCourses];
     }
@@ -677,7 +812,7 @@ app.get("/upload-cv", isAuthenticated, async (req, res) => {
   
     for (let courseName of selectedCourses) {
   
-      // Check if already requested
+
       const existing = await CourseRequest.findOne({
         faculty: user._id,
         courseName,
@@ -686,7 +821,7 @@ app.get("/upload-cv", isAuthenticated, async (req, res) => {
   
       if (!existing) {
   
-        // Find AI score from recommendations
+
         const recommendation = user.recommendedCourses.find(
           r => r.course === courseName
         );
@@ -709,7 +844,7 @@ app.get("/upload-cv", isAuthenticated, async (req, res) => {
   
 
 
-// Logout
+
 app.get("/logout", (req, res) => {
     req.session.destroy(() => {
         res.redirect("/");

@@ -13,27 +13,27 @@
 
       <div class="relative z-10 bg-white/90 backdrop-blur-md w-[520px] rounded-3xl shadow-2xl p-10">
 
-    <!-- ICON -->
+    
     <div class="flex justify-center mb-6">
       <div class="w-24 h-24 bg-green-800 rounded-3xl flex items-center justify-center text-white text-4xl">
         🔖
       </div>
     </div>
 
-    <!-- TITLE -->
+ 
     <h1 class="text-3xl font-bold text-center mb-2">CAS</h1>
     <p class="text-center text-gray-500 mb-8">
       Login as Faculty / Instructor
     </p>
 
-    <!-- ERROR MESSAGE -->
+ 
     <% if(error){ %>
       <div class="bg-red-100 text-red-700 p-3 rounded-xl mb-4 text-sm text-center">
         <%= error %>
       </div>
     <% } %>
 
-    <!-- FORM -->
+
     <form action="/faculty-signup" method="POST" class="space-y-5">
 
       <input type="text" name="fullName" placeholder="Full Name" required
@@ -51,7 +51,6 @@
       <input type="password" name="confirmPassword" placeholder="Confirm Password" required
         class="w-full border border-gray-300 rounded-2xl px-6 py-4 focus:outline-none focus:ring-2 focus:ring-green-700">
 
-      <!-- BUTTONS -->
       <div class="flex gap-4 mt-6">
 
         <a href="/faculty-login"
