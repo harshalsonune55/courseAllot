@@ -401,7 +401,7 @@ app.post("/login-hod", async (req, res) => {
 
 
 // Faculty Signup Page
-app.get("/faculty-signup", (req, res) => {
+app.get("/signup-faculty", (req, res) => {
     res.render("signup-faculty", { layout: false, error: null });
 });
 
