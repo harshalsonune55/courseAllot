@@ -93,65 +93,63 @@
   
       <!-- AVAILABLE COURSES -->
     <!-- AVAILABLE COURSES -->
-<div>
-  <h4 class="text-lg font-semibold text-gray-800 mb-6">
-    ✨ AI Suggested Courses (Based on Your CV)
-  </h4>
-
-  <form action="/save-preferences" method="POST" id="courseForm">
-
-    <% if (data.recommendations && data.recommendations.length > 0) { %>
-
-      <% data.recommendations.forEach((course, index) => { %>
-
-        <label class="course-card block bg-gray-50 border-2 border-gray-200 rounded-2xl p-6 flex justify-between items-center mb-4 cursor-pointer transition hover:border-blue-900">
-
-          <div>
-            <h5 class="text-lg font-semibold"><%= course.course %></h5>
-            <p class="text-gray-600">
-              AI Match Score: <%= course.score %>%
-            </p>
-
-            <% if(course.score >= 80){ %>
-              <p class="text-green-700 text-sm mt-2">Highly Recommended</p>
-            <% } else if(course.score >= 60){ %>
-              <p class="text-yellow-600 text-sm mt-2">Good Match</p>
-            <% } else { %>
-              <p class="text-gray-500 text-sm mt-2">Moderate Match</p>
-            <% } %>
+    <div>
+      <h4 class="text-lg font-semibold text-gray-800 mb-6">
+        ✨ AI Suggested Courses (Based on Your CV)
+      </h4>
+    
+      <% if (data.recommendations && data.recommendations.length > 0) { %>
+    
+        <% data.recommendations.forEach(course => { %>
+    
+          <div class="bg-gray-50 border-2 border-gray-200 rounded-2xl p-6 mb-4">
+    
+            <div class="flex justify-between items-center">
+    
+              <div>
+                <h5 class="text-lg font-semibold">
+                  <%= course.course %>
+                </h5>
+    
+                <p class="text-gray-600 mt-2">
+                  AI Match Score: 
+                  <span class="text-green-700 font-semibold">
+                    <%= course.score %>%
+                  </span>
+                </p>
+    
+                <% if(course.score >= 80){ %>
+                  <p class="text-green-700 text-sm mt-2">
+                    Highly Recommended
+                  </p>
+                <% } else if(course.score >= 60){ %>
+                  <p class="text-yellow-600 text-sm mt-2">
+                    Good Match
+                  </p>
+                <% } else { %>
+                  <p class="text-gray-500 text-sm mt-2">
+                    Moderate Match
+                  </p>
+                <% } %>
+              </div>
+    
+            </div>
+    
           </div>
+    
+        <% }) %>
+    
+      <% } else { %>
+    
+        <div class="bg-yellow-50 border border-yellow-200 text-yellow-900 p-6 rounded-xl">
+          Upload your CV to see AI-powered course suggestions.
+        </div>
+    
+      <% } %>
+    </div>
+    
 
-          <!-- Hidden Checkbox -->
-          <input type="checkbox"
-                 name="selectedCourses"
-                 value="<%= course.course %>"
-                 class="hidden course-checkbox">
 
-          <!-- Selection Circle -->
-          <div class="selection-circle w-8 h-8 border-2 border-gray-400 rounded-full flex items-center justify-center text-white">
-            ✓
-          </div>
-
-        </label>
-
-      <% }) %>
-
-    <% } else { %>
-
-      <div class="bg-yellow-50 border border-yellow-200 text-yellow-900 p-6 rounded-xl">
-        Upload your CV to see AI-powered course suggestions.
-      </div>
-
-    <% } %>
-
-    <!-- SAVE BUTTON -->
-    <button type="submit"
-      id="saveBtn"
-      class="w-full mt-6 bg-blue-950 text-white py-4 rounded-xl font-medium opacity-70 cursor-not-allowed transition">
-      ✨ Save Preferences (0 selected)
-    </button>
-
-  </form>
 </div>
 
 
@@ -183,21 +181,23 @@
       <div class="mb-8">
         <label class="block text-lg font-medium mb-3">Select Course</label>
 
-        <select name="courseName"
+        <select name="courseName" id="courseSelect"
           class="w-full border-2 border-blue-600 rounded-2xl px-6 py-4 text-lg focus:outline-none"
           required>
 
           <option value="">-- Select Course --</option>
-          <option>Intro to Programming</option>
-          <option>Data Structures</option>
-          <option>Machine Learning</option>
-          <option>Database Management</option>
-          <option>Computer Networks</option>
+<% data.recommendations.forEach(course => { %>
+  <option value="<%= course.course %>">
+    <%= course.course %> (<%= course.score %>% Match)
+  </option>
+<% }) %>
+
         </select>
       </div>
 
       <!-- Hidden Score Field -->
-      <input type="hidden" name="score" value="75">
+      <input type="hidden" name="score" id="aiScoreInput">
+
 
       <div class="flex gap-6">
         <button type="button" onclick="closeModal()"
@@ -284,6 +284,24 @@
       } else {
         submitBtn.classList.add("bg-gray-300", "text-gray-600", "cursor-not-allowed");
         submitBtn.classList.remove("bg-blue-950", "text-white");
+      }
+    });
+  </script>
+  <script>
+    const recommendations = <%- JSON.stringify(data.recommendations || []) %>;
+  
+    const select = document.getElementById("courseSelect");
+    const scoreInput = document.getElementById("aiScoreInput");
+  
+    select.addEventListener("change", function () {
+      const selectedCourse = select.value;
+  
+      const found = recommendations.find(r => r.course === selectedCourse);
+  
+      if (found) {
+        scoreInput.value = found.score;
+      } else {
+        scoreInput.value = 50; // fallback if not AI suggested
       }
     });
   </script>

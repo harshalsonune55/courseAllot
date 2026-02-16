@@ -210,25 +210,32 @@ function generateRecommendations(parsedData) {
 /* =============================
    ROUTES
 ============================= */
-
 app.post("/request-course", isAuthenticated, async (req, res) => {
 
-    const { courseName, score } = req.body;
+    const { courseName } = req.body;
   
-    // ✅ CHECK IF REQUEST ALREADY EXISTS
+    const user = await User.findById(req.session.user._id);
+  
+    // Check existing
     const existing = await CourseRequest.findOne({
-      faculty: req.session.user._id,
+      faculty: user._id,
       courseName,
-      status: "PENDING"
+      status: { $in: ["PENDING", "APPROVED"] }
     });
   
     if (existing) {
       return res.redirect("/allocations");
     }
   
-    // ✅ CREATE NEW REQUEST IF NOT EXISTS
+    // 🔥 Get AI score dynamically
+    const recommendation = user.recommendedCourses.find(
+      r => r.course === courseName
+    );
+  
+    const score = recommendation ? recommendation.score : 50;
+  
     await CourseRequest.create({
-      faculty: req.session.user._id,
+      faculty: user._id,
       courseName,
       matchScore: score,
       status: "PENDING"
@@ -236,6 +243,8 @@ app.post("/request-course", isAuthenticated, async (req, res) => {
   
     res.redirect("/allocations");
   });
+  
+  
   
   
 
@@ -271,6 +280,7 @@ app.post("/request-course", isAuthenticated, async (req, res) => {
     const requests = await CourseRequest
       .find()
       .populate("faculty");
+
   
     res.render("allocation_approve", {
       layout: "layouts/hod-layout",
@@ -294,12 +304,12 @@ app.post("/request-course", isAuthenticated, async (req, res) => {
     }
   
     const requests = await CourseRequest
-        .find()
-        .populate("faculty");
+      .find()
+      .populate("faculty");   // 🔥 VERY IMPORTANT
   
     res.render("hod-dashboard", {
       layout: "layouts/hod-layout",
-      requests,
+      requests,               // 👈 must pass this
       currentPage: "dashboard",
       data: {
         user: {
@@ -309,6 +319,8 @@ app.post("/request-course", isAuthenticated, async (req, res) => {
       }
     });
   });
+
+
   
   app.post("/approve/:id", isAuthenticated, async (req, res) => {
 
@@ -650,14 +662,49 @@ app.get("/upload-cv", isAuthenticated, async (req, res) => {
 
   app.post("/save-preferences", isAuthenticated, async (req, res) => {
 
-    const { preferredCourses } = req.body;
+    let selectedCourses = req.body.selectedCourses;
   
-    await User.findByIdAndUpdate(req.session.user._id, {
-      preferredCourses
-    });
+    if (!selectedCourses) {
+      return res.redirect("/allocations");
+    }
   
-    res.redirect("/home");
+    // If only one selected, convert to array
+    if (!Array.isArray(selectedCourses)) {
+      selectedCourses = [selectedCourses];
+    }
+  
+    const user = await User.findById(req.session.user._id);
+  
+    for (let courseName of selectedCourses) {
+  
+      // Check if already requested
+      const existing = await CourseRequest.findOne({
+        faculty: user._id,
+        courseName,
+        status: { $in: ["PENDING", "APPROVED"] }
+      });
+  
+      if (!existing) {
+  
+        // Find AI score from recommendations
+        const recommendation = user.recommendedCourses.find(
+          r => r.course === courseName
+        );
+  
+        const score = recommendation ? recommendation.score : 50;
+  
+        await CourseRequest.create({
+          faculty: user._id,
+          courseName,
+          matchScore: score,
+          status: "PENDING"
+        });
+      }
+    }
+  
+    res.redirect("/allocations");
   });
+  
   
   
 
