@@ -42,6 +42,10 @@ app.use(session({
         mongoUrl: process.env.MONGO_URL
     })
 }));
+app.use((req, res, next) => {
+  res.locals.user = req.session.user || null;
+  next();
+});
 
 
 const storage = multer.diskStorage({
@@ -708,20 +712,25 @@ app.get("/notifications", isAuthenticated, async (req, res) => {
   
 
 
-app.post("/update-profile", isAuthenticated, async (req, res) => {
-
-    const { fullName, email, department, phone } = req.body;
-
-    const updatedUser = await User.findByIdAndUpdate(
+  app.post("/update-profile", isAuthenticated, async (req, res) => {
+    try {
+      const { fullName, email, department, phone } = req.body;
+  
+      const updatedUser = await User.findByIdAndUpdate(
         req.session.user._id,
         { fullName, email, department, phone },
         { new: true }
-    );
-
-    req.session.user = updatedUser;
-
-    res.redirect("/home");
-});
+      );
+  
+      req.session.user = updatedUser;
+  
+      res.redirect("/home");
+    } catch (err) {
+      console.error("Update Profile Error:", err);
+      res.redirect("/home");
+    }
+  });
+  
 
 app.get("/upload-cv", isAuthenticated, async (req, res) => {
 
@@ -771,7 +780,7 @@ app.get("/upload-cv", isAuthenticated, async (req, res) => {
       return res.redirect("/upload-cv?rejected=true");
     }
   
-    // ✅ VALID CV
+
     const parsedData = parseCV(cvText);
     const recommendations = generateRecommendations(parsedData);
   
