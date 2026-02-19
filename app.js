@@ -588,6 +588,23 @@ app.post("/request-course", isAuthenticated, async (req, res) => {
   });
 
 
+  app.post("/reject-with-comment/:id", isAuthenticated, async (req, res) => {
+
+    if (req.session.user.role !== "HOD") {
+      return res.redirect("/home");
+    }
+  
+    const { hodReply } = req.body;
+  
+    await CourseRequest.findByIdAndUpdate(req.params.id, {
+      status: "REJECTED",
+      hodReply: hodReply,
+      approvedAt: new Date()
+    });
+  
+    res.redirect("/hod-dashboard");
+  });
+
 
   
   

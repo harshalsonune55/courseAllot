@@ -11,6 +11,7 @@ const courseRequestSchema = new mongoose.Schema({
       required: true
     },
     comment: String, 
+    hodReply: String,
     matchScore: {
       type: Number,
       required: true

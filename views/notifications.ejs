@@ -57,6 +57,13 @@
                 <strong><%= req.courseName %></strong>
               </p>
             <% } %>
+            <% if(req.hodReply){ %>
+              <p class="text-red-700 mt-2">
+                <strong>HOD Reply:</strong>
+                <%= req.hodReply %>
+              </p>
+            <% } %>
+            
 
       
             <p class="text-gray-400 mt-1 text-sm">

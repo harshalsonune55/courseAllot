@@ -62,6 +62,30 @@
                   <strong>Comment:</strong> 
                   <%= req.comment || "No comment provided" %>
                 </p>
+                <div class="mt-4">
+                  <form action="/reject-with-comment/<%= req._id %>" method="POST">
+                    
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                      Reply to Faculty (This will reject the request):
+                    </label>
+                
+                    <textarea 
+                      name="hodReply" 
+                      rows="3"
+                      placeholder="Write your feedback or reason for rejection..."
+                      required
+                      class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-600 focus:outline-none"
+                    ></textarea>
+                
+                    <button
+                      type="submit"
+                      class="mt-3 bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition">
+                      Submit Reply & Reject
+                    </button>
+                
+                  </form>
+                </div>
+                
               </div>
   
               <p class="text-gray-400 text-sm mt-2">
