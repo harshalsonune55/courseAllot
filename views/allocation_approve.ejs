@@ -58,6 +58,10 @@
                     <%= req.matchScore %>%
                   </span>
                 </p>
+                <p class="text-blue-800 font-semibold " >
+                  <strong>Comment:</strong> 
+                  <%= req.comment || "No comment provided" %>
+                </p>
               </div>
   
               <p class="text-gray-400 text-sm mt-2">
@@ -121,6 +125,11 @@
             <p class="text-gray-600 mt-1">
               <%= req.faculty?.fullName || "Unknown Faculty" %>
             </p>
+            <p class="text-gray-600 mt-2">
+              <strong>Comment:</strong> 
+              <%= req.comment || "No comment provided" %>
+            </p>
+            
   
             <p class="text-green-700 mt-2">
               AI: <%= req.matchScore %>%

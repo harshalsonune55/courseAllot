@@ -10,6 +10,7 @@ const courseRequestSchema = new mongoose.Schema({
       type: String,
       required: true
     },
+    comment: String, 
     matchScore: {
       type: Number,
       required: true

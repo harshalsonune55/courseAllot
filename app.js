@@ -477,7 +477,8 @@ function isValidCV(cvText) {
 
 app.post("/request-course", isAuthenticated, async (req, res) => {
 
-    const { courseName } = req.body;
+  const { courseName, comment } = req.body;
+
   
     const user = await User.findById(req.session.user._id);
   
@@ -503,6 +504,7 @@ app.post("/request-course", isAuthenticated, async (req, res) => {
       faculty: user._id,
       courseName,
       matchScore: score,
+      comment: comment || "",
       status: "PENDING"
     });
   
@@ -639,7 +641,7 @@ app.post("/login-faculty", async (req, res) => {
 
   const { identifier, password } = req.body;
 
-  // 🔹 Find by username OR email
+ 
   const user = await User.findOne({
     $or: [
         { username: new RegExp(`^${identifier}$`, "i") },
@@ -918,24 +920,24 @@ app.get("/upload-cv", isAuthenticated, async (req, res) => {
     const pdfData = await pdfParse(dataBuffer);
   
     const cvText = pdfData.text;
-    const now = new Date();   // ✅ define first
+    const now = new Date(); 
   
-    // 🔹 Mandatory University Check
+   
     if (!cvText.toLowerCase().includes("university of sharjah")) {
       await rejectCV(req.session.user._id, now);
       return res.redirect("/upload-cv?rejected=true");
     }
   
-    // 🔹 Basic structure validation
+
     if (!isValidCV(cvText)) {
       await rejectCV(req.session.user._id, now);
       return res.redirect("/upload-cv?rejected=true");
     }
   
-    // 🔹 Match score validation
+    
     const matchPercentage = calculateCVMatchScore(cvText);
   
-    if (matchPercentage < 55) {  // better logic
+    if (matchPercentage < 55) {  
       await rejectCV(req.session.user._id, now);
       return res.redirect("/upload-cv?rejected=true");
     }

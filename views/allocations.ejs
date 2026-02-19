@@ -177,38 +177,53 @@
 
       <div class="mb-8">
         <label class="block text-lg font-medium mb-3">Select Course</label>
-
+    
         <select name="courseName" id="courseSelect"
           class="w-full border-2 border-blue-600 rounded-2xl px-6 py-4 text-lg focus:outline-none"
           required>
-
+    
           <option value="">-- Select Course --</option>
-<% data.recommendations.forEach(course => { %>
-  <option value="<%= course.course %>">
-    <%= course.course %> (<%= course.score %>% Match)
-  </option>
-<% }) %>
-
+          <% data.recommendations.forEach(course => { %>
+            <option value="<%= course.course %>">
+              <%= course.course %> (<%= course.score %>% Match)
+            </option>
+          <% }) %>
+    
         </select>
       </div>
-
-  
+    
+      <!-- 🔹 NEW COMMENT SECTION -->
+      <div class="mb-8">
+        <label class="block text-lg font-medium mb-3">
+          Comment to HOD (Optional)
+        </label>
+    
+        <textarea name="comment"
+          rows="4"
+          placeholder="Explain why you would like to teach this course..."
+          class="w-full border-2 border-gray-300 rounded-2xl px-6 py-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-600 resize-none"></textarea>
+    
+        <p class="text-sm text-gray-500 mt-2">
+          Example: I have 5 years experience teaching this subject and completed advanced research in this area.
+        </p>
+      </div>
+    
       <input type="hidden" name="score" id="aiScoreInput">
-
-
+    
       <div class="flex gap-6">
         <button type="button" onclick="closeModal()"
           class="w-1/2 bg-gray-200 py-4 rounded-2xl text-lg font-medium hover:bg-gray-300">
           Cancel
         </button>
-
+    
         <button type="submit"
           class="w-1/2 bg-blue-950 text-white py-4 rounded-2xl text-lg font-medium">
           ✨ Submit Request
         </button>
       </div>
-
+    
     </form>
+    
 
   </div>
 </div>
