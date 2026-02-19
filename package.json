@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@google/genai": "^1.41.0",
     "bcryptjs": "^3.0.3",
     "connect-mongo": "^6.0.0",
     "dotenv": "^17.3.1",
@@ -20,6 +21,7 @@
     "express-session": "^1.19.0",
     "mongoose": "^9.2.1",
     "multer": "^2.0.2",
+    "openai": "^6.22.0",
     "pdf-parse": "^1.1.1"
   }
 }

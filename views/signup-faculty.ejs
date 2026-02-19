@@ -39,8 +39,14 @@
       <input type="text" name="fullName" placeholder="Full Name" required
         class="w-full border border-gray-300 rounded-2xl px-6 py-4 focus:outline-none focus:ring-2 focus:ring-green-700">
 
-      <input type="email" name="email" placeholder="Email" required
+        <input type="email"
+        name="email"
+        placeholder="Email (e.g., name@sharjah.ac.ae)"
+        required
+        pattern="^[a-zA-Z0-9._%+-]+@sharjah\.ac\.ae$"
+        title="Email must be in format: name@sharjah.ac.ae"
         class="w-full border border-gray-300 rounded-2xl px-6 py-4 focus:outline-none focus:ring-2 focus:ring-green-700">
+ 
 
       <input type="text" name="username" placeholder="Username" required
         class="w-full border border-gray-300 rounded-2xl px-6 py-4 focus:outline-none focus:ring-2 focus:ring-green-700">
@@ -68,6 +74,19 @@
     </form>
 
   </div>
+
+  <script>
+    const emailInput = document.querySelector("input[name='email']");
+  
+    emailInput.addEventListener("input", function () {
+      if (!emailInput.value.endsWith("@sharjah.ac.ae")) {
+        emailInput.setCustomValidity("Email must be a valid sharjah.ac.ae email");
+      } else {
+        emailInput.setCustomValidity("");
+      }
+    });
+  </script>
+  
 
 </body>
 </html>

@@ -27,6 +27,15 @@ const userSchema = new mongoose.Schema({
     skills: [String],
     experienceYears: Number,
     education: String,
+    authenticityScore: {
+      type: Number,
+      default: 0
+    },
+    
+    authenticityReport: {
+      type: String,
+      default: ""
+    },
     recommendedCourses: [
         {
             course: String,

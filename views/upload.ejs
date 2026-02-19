@@ -52,10 +52,12 @@
 <% if(success){ %>
   <div class="bg-green-100 text-green-800 p-4 rounded-xl mb-6">
     CV Approved Successfully! <br>
+    Match Score: <%= data.user.matchScore || "Qualified" %>% <br>
     Uploaded on:
     <%= new Date(data.user.cvUploadedAt).toLocaleDateString() %>
   </div>
 <% } %>
+
 
 <% if(rejected){ %>
   <div class="bg-red-100 text-red-800 p-4 rounded-xl mb-6">

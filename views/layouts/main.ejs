@@ -5,6 +5,16 @@
   <title>CAS Dashboard</title>
   <link href="/css/output.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style>
+    .modal-enter {
+      animation: fadeIn 0.2s ease-out;
+    }
+  
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  </style>
 </head>
 <body class="bg-gray-100 font-sans">
 
@@ -55,7 +65,10 @@
 
     <div>
       <p class="font-semibold text-gray-800"><%= user.fullName %></p>
-      <p class="text-sm text-gray-500"><%= user.role %></p>
+      <p class="text-sm text-gray-500">
+        <%= user.role %> • <%= user.department || "No Dept" %>
+      </p>
+      
     </div>
 
   </div>
@@ -66,7 +79,8 @@
 
 <!-- PROFILE MODAL -->
 <div id="profileModal" 
-     class="fixed inset-0 backdrop-blur-sm flex items-center justify-center hidden z-50">
+class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center hidden z-50"
+>
 
   <div class="bg-white w-[480px] rounded-2xl shadow-xl p-6 relative">
 
@@ -143,7 +157,7 @@
 
 <!-- EDIT PROFILE MODAL -->
 <div id="editProfileModal" 
-     class="fixed inset-0 backdrop-blur-sm flex items-center justify-center hidden z-50">
+     class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center hidden z-50">
 
   <div class="bg-white w-[520px] rounded-2xl shadow-xl p-6 relative">
 
@@ -173,17 +187,49 @@
 
       <div>
         <label class="block text-lg mb-2">Email</label>
-        <input type="email" name="email" 
-          value="<%= user.email %>"
-          class="w-full border-2 border-gray-300 rounded-2xl px-6 py-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+        <input type="email" name="email"
+  value="<%= user.email %>"
+  readonly
+  class="w-full border-2 border-gray-200 bg-gray-100 rounded-2xl px-6 py-4 text-lg cursor-not-allowed">
+
       </div>
 
       <div>
         <label class="block text-lg mb-2">Department</label>
-        <input type="text" name="department" 
-          value="<%= user.department || '' %>"
+      
+        <select name="department" required
           class="w-full border-2 border-gray-300 rounded-2xl px-6 py-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+      
+          <option value="">Select Department</option>
+      
+          <option value="Business Administration"
+            <%= user.department === "Business Administration" ? "selected" : "" %>>
+            Business Administration
+          </option>
+      
+          <option value="Engineering"
+            <%= user.department === "Engineering" ? "selected" : "" %>>
+            Engineering
+          </option>
+      
+          <option value="Health Sciences"
+            <%= user.department === "Health Sciences" ? "selected" : "" %>>
+            Health Sciences
+          </option>
+      
+          <option value="Computing and Informatics"
+            <%= user.department === "Computing and Informatics" ? "selected" : "" %>>
+            Computing and Informatics
+          </option>
+      
+          <option value="Sciences"
+            <%= user.department === "Sciences" ? "selected" : "" %>>
+            Sciences
+          </option>
+      
+        </select>
       </div>
+      
 
       <div>
         <label class="block text-lg mb-2">Phone</label>

@@ -13,6 +13,8 @@ const fs = require("fs");
 const CourseRequest = require("./models/CourseRequest");
 
 
+
+
 const User = require("./models/User");
 
 const app = express();
@@ -20,7 +22,7 @@ const PORT = process.env.PORT || 3000;
 
 
 mongoose.connect(process.env.MONGO_URL)
-    .then(() => console.log("✅ MongoDB Atlas Connected"))
+    .then(() => console.log("MongoDB Atlas Connected"))
     .catch(err => console.log("Mongo Error:", err));
 
 
@@ -56,7 +58,10 @@ const storage = multer.diskStorage({
         cb(null, Date.now() + "-" + file.originalname);
     }
 });
-const upload = multer({ storage });
+const upload = multer({
+  storage,
+  limits: { fileSize: 1024 * 1024 } 
+});
 
 
 app.set("view engine", "ejs");
@@ -71,6 +76,76 @@ function isAuthenticated(req, res, next) {
     if (!req.session.user) return res.redirect("/");
     next();
 }
+
+// async function verifyCVWithGemini(parsedData, rawText) {
+//   try {
+
+//     const model = ai.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+//     const prompt = `
+// You are an academic CV authenticity verification system.
+
+// Analyze the CV and return ONLY valid JSON.
+
+// Check:
+// - Valid college name
+// - Logical experience dates
+// - Realistic skill alignment
+// - Consistency between education & experience
+
+// Parsed Data:
+// Education: ${parsedData.education}
+// Experience Years: ${parsedData.experienceYears}
+// Skills: ${parsedData.skills.join(", ")}
+
+// Full CV Text:
+// ${rawText}
+
+// Return JSON format:
+
+// {
+//   "authenticityScore": number,
+//   "collegeValid": true/false,
+//   "datesValid": true/false,
+//   "experienceValid": true/false,
+//   "overallAssessment": "short explanation"
+// }
+// `;
+
+//     const response = await ai.models.generateContent({
+//       model,
+//       contents: [
+//         {
+//           role: "user",
+//           parts: [{ text: prompt }]
+//         }
+//       ]
+//     });
+
+//     const text = response.text;
+//     const cleaned = text.replace(/```json|```/g, "").trim();
+
+//     return JSON.parse(cleaned);
+
+//   } catch (error) {
+//     console.error("Gemini Verification Error:", error);
+
+//     return {
+//       authenticityScore: 50,
+//       collegeValid: false,
+//       datesValid: false,
+//       experienceValid: false,
+//       overallAssessment: "AI verification failed"
+//     };
+//   }
+// }
+
+
+
+
+
+
+
 
 
 function matchCourses(cvText) {
@@ -346,6 +421,56 @@ function isValidCV(cvText) {
   
     return recommendations.sort((a, b) => b.score - a.score);
   }
+
+  async function rejectCV(userId, now) {
+    await User.findByIdAndUpdate(userId, {
+      cvStatus: "REJECTED",
+      cvUploadedAt: now,
+      cvReviewedAt: now,
+      skills: [],
+      experienceYears: 0,
+      education: "",
+      recommendedCourses: []
+    });
+  }
+  
+
+  function calculateCVMatchScore(cvText) {
+
+    const courses = [
+      {
+        keywords: ["python", "machine learning", "tensorflow", "pytorch", "ai", "data science"]
+      },
+      {
+        keywords: ["algorithms", "data structures", "c++", "java"]
+      },
+      {
+        keywords: ["sql", "database", "mysql", "mongodb"]
+      },
+      {
+        keywords: ["network", "tcp", "udp", "routing"]
+      }
+    ];
+  
+    cvText = cvText.toLowerCase();
+  
+    let totalKeywords = 0;
+    let matchedKeywords = 0;
+  
+    courses.forEach(course => {
+      course.keywords.forEach(keyword => {
+        totalKeywords++;
+        if (cvText.includes(keyword)) {
+          matchedKeywords++;
+        }
+      });
+    });
+  
+    const percentage = (matchedKeywords / totalKeywords) * 100;
+  
+    return Math.round(percentage);
+  }
+  
   
 
 
@@ -461,6 +586,9 @@ app.post("/request-course", isAuthenticated, async (req, res) => {
   });
 
 
+
+  
+  
   
   app.post("/approve/:id", isAuthenticated, async (req, res) => {
 
@@ -509,22 +637,37 @@ app.get("/faculty-login", (req, res) => {
 
 app.post("/login-faculty", async (req, res) => {
 
-    const { username, password } = req.body;
-    const user = await User.findOne({ username });
+  const { identifier, password } = req.body;
 
-    if (!user || user.role !== "Faculty") {
-        return res.render("login-faculty", { layout: false, error: "Invalid Faculty Account" });
-    }
-
-    const isMatch = await bcrypt.compare(password, user.password);
-
-    if (!isMatch) {
-        return res.render("login-faculty", { layout: false, error: "Invalid Password" });
-    }
-
-    req.session.user = user;
-    res.redirect("/home");
+  // 🔹 Find by username OR email
+  const user = await User.findOne({
+    $or: [
+        { username: new RegExp(`^${identifier}$`, "i") },
+        { email: new RegExp(`^${identifier}$`, "i") }
+    ]
 });
+
+
+  if (!user || user.role !== "Faculty") {
+      return res.render("login-faculty", {
+          layout: false,
+          error: "Invalid Username / Email"
+      });
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+
+  if (!isMatch) {
+      return res.render("login-faculty", {
+          layout: false,
+          error: "Invalid Password"
+      });
+  }
+
+  req.session.user = user;
+  res.redirect("/home");
+});
+
  
 
 app.get("/hod-login", (req, res) => {
@@ -533,22 +676,35 @@ app.get("/hod-login", (req, res) => {
 
 app.post("/login-hod", async (req, res) => {
 
-    const { username, password } = req.body;
-    const user = await User.findOne({ username });
+  const { identifier, password } = req.body;
 
-    if (!user || user.role !== "HOD") {
-        return res.render("login-hod", { layout: false, error: "Invalid HOD Account" });
-    }
+  const user = await User.findOne({
+      $or: [
+          { username: identifier },
+          { email: identifier }
+      ]
+  });
 
-    const isMatch = await bcrypt.compare(password, user.password);
+  if (!user || user.role !== "HOD") {
+      return res.render("login-hod", {
+          layout: false,
+          error: "Invalid Username / Email"
+      });
+  }
 
-    if (!isMatch) {
-        return res.render("login-hod", { layout: false, error: "Invalid Password" });
-    }
+  const isMatch = await bcrypt.compare(password, user.password);
 
-    req.session.user = user;
-    res.redirect("/hod-dashboard");  
+  if (!isMatch) {
+      return res.render("login-hod", {
+          layout: false,
+          error: "Invalid Password"
+      });
+  }
+
+  req.session.user = user;
+  res.redirect("/hod-dashboard");
 });
+
 
 
 
@@ -719,7 +875,7 @@ app.get("/notifications", isAuthenticated, async (req, res) => {
       const updatedUser = await User.findByIdAndUpdate(
         req.session.user._id,
         { fullName, email, department, phone },
-        { new: true }
+        { returnDocument: "after" }
       );
   
       req.session.user = updatedUser;
@@ -760,27 +916,30 @@ app.get("/upload-cv", isAuthenticated, async (req, res) => {
   
     const dataBuffer = fs.readFileSync(req.file.path);
     const pdfData = await pdfParse(dataBuffer);
+  
     const cvText = pdfData.text;
+    const now = new Date();   // ✅ define first
   
-    const now = new Date();
-    const valid = isValidCV(cvText);
-  
-    if (!valid) {
-  
-      await User.findByIdAndUpdate(req.session.user._id, {
-        cvStatus: "REJECTED",
-        cvUploadedAt: now,
-        cvReviewedAt: now,
-        skills: [],
-        experienceYears: 0,
-        education: "",
-        recommendedCourses: []
-      });
-  
+    // 🔹 Mandatory University Check
+    if (!cvText.toLowerCase().includes("university of sharjah")) {
+      await rejectCV(req.session.user._id, now);
       return res.redirect("/upload-cv?rejected=true");
     }
   
-
+    // 🔹 Basic structure validation
+    if (!isValidCV(cvText)) {
+      await rejectCV(req.session.user._id, now);
+      return res.redirect("/upload-cv?rejected=true");
+    }
+  
+    // 🔹 Match score validation
+    const matchPercentage = calculateCVMatchScore(cvText);
+  
+    if (matchPercentage < 55) {  // better logic
+      await rejectCV(req.session.user._id, now);
+      return res.redirect("/upload-cv?rejected=true");
+    }
+  
     const parsedData = parseCV(cvText);
     const recommendations = generateRecommendations(parsedData);
   
@@ -795,13 +954,14 @@ app.get("/upload-cv", isAuthenticated, async (req, res) => {
         cvUploadedAt: now,
         cvReviewedAt: now
       },
-      { new: true }
+      { returnDocument: "after" }
     );
   
     req.session.user = updatedUser;
   
     res.redirect("/upload-cv?success=true");
   });
+  
   
 
   app.post("/save-preferences", isAuthenticated, async (req, res) => {
