@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
       },
       
 
-    // 🔥 CV Parsed Data
+    
     skills: [String],
     experienceYears: Number,
     education: String,
