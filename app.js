@@ -46,6 +46,7 @@ app.use(session({
 }));
 app.use((req, res, next) => {
   res.locals.user = req.session.user || null;
+  res.locals.currentPage = "";   // 🔥 ADD THIS
   next();
 });
 
@@ -836,7 +837,57 @@ app.get("/home", isAuthenticated, async (req, res) => {
   
 
 
+  app.get("/reset-password", (req, res) => {
+    res.render("reset-password", {
+      error: null,
+      currentPage: "auth",
+      success: null
+    });
+  });
 
+
+
+app.post("/reset-password", async (req, res) => {
+
+  const { email, newPassword } = req.body;
+
+  try {
+    const user = await User.findOne({
+      email: new RegExp(`^${email}$`, "i")
+    });
+
+    if (!user) {
+      return res.render("reset-password", {
+        error: "User not found",
+        success: null
+      });
+    }
+
+    // 🔐 Hash new password
+    if (newPassword.length < 6) {
+      return res.render("reset-password", {
+        error: "Password must be at least 6 characters",
+        success: null
+      });
+    }
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    user.password = hashedPassword;
+    await user.save();
+
+    res.render("reset-password", {
+      success: "Password updated successfully ✅",
+      error: null
+    });
+
+  } catch (err) {
+    console.log(err);
+    res.render("reset-password", {
+      error: "Something went wrong",
+      success: null
+    });
+  }
+});
 
 
 

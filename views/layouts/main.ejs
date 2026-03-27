@@ -18,7 +18,9 @@
 </head>
 <body class="bg-gray-100 font-sans">
 
-<nav class="bg-white shadow-sm px-10 py-4 flex justify-between items-center">
+  <% if (typeof currentPage !== 'undefined' && currentPage !== 'auth') { %>
+
+    <nav class="bg-white shadow-sm px-10 py-4 flex justify-between items-center">
 
   <div class="flex items-center gap-4">
 
@@ -56,26 +58,29 @@
 
   </div>
 
-  <div onclick="openProfileModal()" 
-     class="flex items-center gap-3 cursor-pointer hover:bg-gray-100 px-4 py-2 rounded-xl transition">
-
-    <div class="w-10 h-10 bg-blue-950 text-white rounded-full flex items-center justify-center">
-      👤
+  <% if (user) { %>
+    <div onclick="openProfileModal()" 
+         class="flex items-center gap-3 cursor-pointer hover:bg-gray-100 px-4 py-2 rounded-xl transition">
+    
+      <div class="w-10 h-10 bg-blue-950 text-white rounded-full flex items-center justify-center">
+        👤
+      </div>
+    
+      <div>
+        <p class="font-semibold text-gray-800"><%= user.fullName %></p>
+        <p class="text-sm text-gray-500">
+          <%= user.role %> • <%= user.department || "No Dept" %>
+        </p>
+      </div>
+    
     </div>
-
-    <div>
-      <p class="font-semibold text-gray-800"><%= user.fullName %></p>
-      <p class="text-sm text-gray-500">
-        <%= user.role %> • <%= user.department || "No Dept" %>
-      </p>
-      
-    </div>
-
-  </div>
-
+    <% } %>
 </nav>
+<% } %>
 
 <%- body %>
+
+<% if (user) { %>
 
 <div id="profileModal" 
 class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center hidden z-50"
@@ -153,8 +158,9 @@ class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-cent
 
   </div>
 </div>
+<% } %>
 
-
+<% if (user) { %>
 <div id="editProfileModal" 
      class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center hidden z-50">
 
@@ -255,6 +261,7 @@ class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-cent
 
   </div>
 </div>
+<% } %>
 
 <script>
   const profileModal = document.getElementById("profileModal");
