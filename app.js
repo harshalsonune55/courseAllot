@@ -476,6 +476,54 @@ function isValidCV(cvText) {
 
 
 
+  app.get("/add-faculty", (req, res) => {
+    res.render("add-faculty");
+});
+
+
+
+app.post("/add-faculty", async (req, res) => {
+  try {
+      const { fullName, email, username, password, department, phone } = req.body;
+
+      
+      const existingUser = await User.findOne({
+          $or: [
+              { email: new RegExp(`^${email}$`, "i") },
+              { username: new RegExp(`^${username}$`, "i") }
+          ]
+      });
+
+      if (existingUser) {
+          return res.render("add-faculty", {
+              error: "Email or Username already exists"
+          });
+      }
+
+     
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      await User.create({
+          fullName,
+          email,
+          username,
+          password: hashedPassword,
+          department,
+          phone,
+          role: "FACULTY"
+      });
+
+      res.redirect("/faculty-members");
+
+  } catch (err) {
+      console.log(err);
+
+      return res.render("add-faculty", {
+          error: "Something went wrong"
+      });
+  }
+});
+
 app.post("/request-course", isAuthenticated, async (req, res) => {
 
   const { courseName, comment } = req.body;
@@ -523,7 +571,9 @@ app.post("/request-course", isAuthenticated, async (req, res) => {
       return res.redirect("/home");
     }
   
-    const facultyList = await User.find({ role: "Faculty" });
+    const facultyList = await User.find({
+      role: { $regex: /^faculty$/i }
+    });
   
     res.render("faculty-members", {
       layout: "layouts/hod-layout",
@@ -535,6 +585,13 @@ app.post("/request-course", isAuthenticated, async (req, res) => {
           role: req.session.user.role
         }
       }
+    });
+  });
+
+
+  app.get("/update-profile", (req, res) => {
+    res.render("update-profile", {
+      data: { user: req.user }   
     });
   });
   

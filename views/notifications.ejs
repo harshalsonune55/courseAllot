@@ -3,10 +3,11 @@
 
   <div class="mb-10">
     <input 
-      type="text"
-      placeholder="Search courses, faculty, allocations..."
-      class="w-full border-2 border-gray-300 rounded-xl px-6 py-4 focus:ring-2 focus:ring-blue-600 focus:outline-none"
-    />
+  id="notificationSearch"
+  type="text"
+  placeholder="Search courses, faculty, allocations..."
+  class="w-full border-2 border-gray-300 rounded-xl px-6 py-4 focus:ring-2 focus:ring-blue-600 focus:outline-none"
+/>
   </div>
 
 
@@ -27,7 +28,7 @@
 
       <% data.requests.forEach(req => { %>
 
-        <div class="bg-white border-2 border-gray-300 rounded-2xl p-8 flex items-start gap-4 shadow-sm">
+        <div class="notification-card bg-white border-2 border-gray-300 rounded-2xl p-8 flex items-start gap-4 shadow-sm">
 
      
           <% if (req.status === "APPROVED") { %>
@@ -83,3 +84,22 @@
   </div>
 
 </div>
+<script>
+  const searchInput = document.getElementById("notificationSearch");
+
+  searchInput.addEventListener("keyup", function () {
+    const value = this.value.toLowerCase();
+
+    const cards = document.querySelectorAll(".notification-card");
+
+    cards.forEach(card => {
+      const text = card.innerText.toLowerCase();
+
+      if (text.includes(value)) {
+        card.style.display = ""; 
+      } else {
+        card.style.display = "none";
+      }
+    });
+  });
+</script>

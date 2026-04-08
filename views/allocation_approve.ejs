@@ -3,10 +3,11 @@
 
     <div class="mb-10">
       <input
-        type="text"
-        placeholder="Search courses, faculty, allocations..."
-        class="w-full border-2 border-gray-300 rounded-xl px-6 py-4 focus:ring-2 focus:ring-blue-600 focus:outline-none"
-      />
+  id="searchAlloc"
+  type="text"
+  placeholder="Search courses, faculty, allocations..."
+  class="w-full border-2 border-gray-300 rounded-xl px-6 py-4 focus:ring-2 focus:ring-blue-600 focus:outline-none"
+/>
     </div>
   
     <% const allReq = (requests || []); %>
@@ -29,7 +30,7 @@
   
       <% pending.forEach(req => { %>
   
-        <div class="bg-gray-50 rounded-2xl p-8 mb-8 shadow-sm">
+        <div class="alloc-card bg-gray-50 rounded-2xl p-8 mb-8 shadow-sm">
   
       
           <div class="flex justify-between items-start mb-6">
@@ -139,7 +140,7 @@
   
       <% allReq.forEach(req => { %>
   
-        <div class="bg-gray-50 rounded-2xl p-8 mb-6 flex justify-between items-center shadow-sm">
+        <div class="alloc-card bg-gray-50 rounded-2xl p-8 mb-6 flex justify-between items-center shadow-sm">
   
           <div>
             <h3 class="text-xl font-semibold">
@@ -181,4 +182,22 @@
     </div>
   
   </div>
+  <script>
+    const searchInput = document.getElementById("searchAlloc");
   
+    searchInput.addEventListener("keyup", function () {
+      const value = this.value.toLowerCase();
+  
+      const cards = document.querySelectorAll(".alloc-card");
+  
+      cards.forEach(card => {
+        const text = card.innerText.toLowerCase();
+  
+        if (text.includes(value)) {
+          card.style.display = "flex"; 
+        } else {
+          card.style.display = "none";
+        }
+      });
+    });
+  </script>

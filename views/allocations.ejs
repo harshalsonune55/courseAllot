@@ -3,10 +3,11 @@
    
     <div class="mb-8">
       <input 
-        type="text"
-        placeholder="Search courses, faculty, allocations..."
-        class="w-full border-2 border-gray-300 rounded-xl px-6 py-4 focus:ring-2 focus:ring-blue-600 focus:outline-none"
-      />
+  id="facultySearch"
+  type="text"
+  placeholder="Search courses, faculty, allocations..."
+  class="w-full border-2 border-gray-300 rounded-xl px-6 py-4 focus:ring-2 focus:ring-blue-600 focus:outline-none"
+/>
     </div>
   
 
@@ -37,7 +38,7 @@
   
       <% data.recommendations.forEach(course => { %>
   
-        <div class="bg-gray-50 border rounded-xl p-6 flex justify-between items-center mb-6">
+        <div class="search-card bg-gray-50 border rounded-xl p-6 flex justify-between items-center mb-6">
   
           <div>
             <h5 class="text-lg font-semibold"><%= course.course %></h5>
@@ -100,7 +101,7 @@
     
         <% data.recommendations.forEach(course => { %>
     
-          <div class="bg-gray-50 border-2 border-gray-200 rounded-2xl p-6 mb-4">
+          <div class="search-card bg-gray-50 border-2 border-gray-200 rounded-2xl p-6 mb-4">
     
             <div class="flex justify-between items-center">
     
@@ -317,4 +318,22 @@
       }
     });
   </script>
+  <script>
+    const searchInput = document.getElementById("facultySearch");
   
+    searchInput.addEventListener("keyup", function () {
+      const value = this.value.toLowerCase();
+  
+      const cards = document.querySelectorAll(".search-card");
+  
+      cards.forEach(card => {
+        const text = card.innerText.toLowerCase();
+  
+        if (text.includes(value)) {
+          card.style.display = "flex"; 
+        } else {
+          card.style.display = "none";
+        }
+      });
+    });
+  </script>

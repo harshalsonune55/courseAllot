@@ -1,0 +1,44 @@
+<div class="p-10 max-w-xl mx-auto bg-white rounded-2xl shadow">
+
+    <h2 class="text-2xl font-bold mb-8 text-gray-800">Update Profile</h2>
+  
+    <form action="/update-profile" method="POST" class="space-y-6">
+  
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Full Name
+        </label>
+        <input 
+          type="text" 
+          name="name" 
+          value="<%= (data && data.user) ? data.user.name : '' %>"
+          class="w-full border-2 border-gray-300 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-600 focus:outline-none"
+          placeholder="Enter your full name"
+          required 
+        />
+      </div>
+  
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Email Address
+        </label>
+        <input 
+          type="email" 
+          name="email" 
+          value="<%= (data && data.user) ? data.user.email : '' %>"
+          class="w-full border-2 border-gray-300 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-600 focus:outline-none"
+          placeholder="Enter your email"
+          required 
+        />
+      </div>
+  
+
+      <button class="w-full bg-blue-950 text-white py-3 rounded-xl font-medium hover:bg-blue-900 transition">
+        Update Profile
+      </button>
+  
+    </form>
+  
+  </div>
