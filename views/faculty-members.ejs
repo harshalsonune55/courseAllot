@@ -72,6 +72,13 @@
             </div>
   
           </div>
+          <div class="mt-6">
+            <button 
+              onclick="openAssignModal('<%= faculty._id %>', '<%= faculty.fullName %>')"
+              class="w-full bg-blue-950 text-white py-2 rounded-xl hover:bg-blue-900">
+              ✨ Assign Course
+            </button>
+          </div>
   
         </div>
   
@@ -80,6 +87,59 @@
     </div>
   
   </div>
+  <div id="assignModal"
+     class="fixed inset-0 bg-black/40 flex items-center justify-center hidden z-50">
+
+  <div class="bg-white w-[500px] rounded-2xl p-8 shadow-xl">
+
+    <h2 class="text-2xl font-bold mb-6">Assign Course</h2>
+
+    <p class="mb-4 text-gray-600">
+      Assigning to: <span id="facultyName" class="font-semibold"></span>
+    </p>
+
+    <form action="/assign-course" method="POST" class="space-y-4">
+
+      <input type="hidden" name="facultyId" id="facultyIdInput">
+
+      <div>
+        <label class="block mb-2">Course Name</label>
+        <select name="courseName"
+  class="w-full border-2 border-gray-300 px-4 py-3 rounded-xl"
+  required>
+
+  <option value="">-- Select Course --</option>
+
+  <% courses.forEach(course => { %>
+    <option value="<%= course %>"><%= course %></option>
+  <% }) %>
+
+</select>
+      </div>
+
+      <div>
+        <label class="block mb-2">Reason (Optional)</label>
+        <textarea name="reason"
+          class="w-full border-2 border-gray-300 px-4 py-3 rounded-xl"
+          placeholder="Why assigning this course..."></textarea>
+      </div>
+
+      <div class="flex gap-4 mt-6">
+        <button type="button" onclick="closeAssignModal()"
+          class="w-1/2 border py-3 rounded-xl">
+          Cancel
+        </button>
+
+        <button type="submit"
+          class="w-1/2 bg-blue-950 text-white py-3 rounded-xl">
+          Assign
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+</div>
 
   <script>
     const searchInput = document.getElementById("searchFaculty");
@@ -100,4 +160,17 @@
       });
     });
   </script>
+  <script>
+    const assignModal = document.getElementById("assignModal");
   
+    function openAssignModal(id, name) {
+      document.getElementById("facultyIdInput").value = id;
+      document.getElementById("facultyName").innerText = name;
+  
+      assignModal.classList.remove("hidden");
+    }
+  
+    function closeAssignModal() {
+      assignModal.classList.add("hidden");
+    }
+  </script>

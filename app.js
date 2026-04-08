@@ -579,6 +579,13 @@ app.post("/request-course", isAuthenticated, async (req, res) => {
       layout: "layouts/hod-layout",
       currentPage: "faculty",
       facultyList,
+      courses: [
+        "Machine Learning",
+        "Data Structures",
+        "Database Management",
+        "Computer Networks",
+        "Project Management"
+      ],
       data: {
         user: {
           name: req.session.user.fullName,
@@ -645,6 +652,36 @@ app.post("/request-course", isAuthenticated, async (req, res) => {
     });
   });
 
+  app.post("/assign-course", async (req, res) => {
+    const { facultyId, courseName, reason } = req.body;
+  
+    try {
+  
+      
+      const existing = await CourseRequest.findOne({
+        faculty: facultyId,
+        courseName
+      });
+  
+      if (existing) {
+        return res.send("Course already assigned");
+      }
+  
+      await CourseRequest.create({
+        faculty: facultyId,
+        courseName,
+        status: "APPROVED",
+        hodReply: reason || "Assigned manually by HOD",
+        matchScore: 100   
+      });
+  
+      res.redirect("/faculty-members");
+  
+    } catch (err) {
+      console.log(err);
+      res.send("Error assigning course");
+    }
+  });
 
   app.post("/reject-with-comment/:id", isAuthenticated, async (req, res) => {
 
