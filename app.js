@@ -247,56 +247,73 @@ function matchCourses(cvText) {
 
 function parseCV(cvText) {
 
-    cvText = cvText.toLowerCase();
+  cvText = cvText.toLowerCase();
 
-    const skillKeywords = [
-     
-        "python", "java", "c++", "machine learning",
-        "sql", "mongodb", "data structures",
-        "tensorflow", "network", "algorithms",
-        "data science",
-  "big data",
-  "spark",
-  "kafka",
-  "geospatial",
-  "recommender",
-      
-    
-        "project management", "agile", "scrum", "leadership",
-      
+  // 🔥 SKILLS (same as before)
+  const skillKeywords = [
+    "python", "java", "c++", "machine learning",
+    "sql", "mongodb", "data structures",
+    "tensorflow", "network", "algorithms",
+    "data science", "big data", "spark", "kafka",
+    "geospatial", "recommender",
+    "project management", "agile", "scrum", "leadership",
+    "communication", "technical writing", "presentation",
+    "calculus", "statistics", "linear algebra",
+    "research", "publications", "conference", "journal",
+    "entrepreneur", "startup", "innovation"
+  ];
 
-        "communication", "technical writing", "presentation",
-      
-      
-        "calculus", "statistics", "linear algebra",
-      
-        
-        "research", "publications", "conference", "journal",
-      
-       
-        "entrepreneur", "startup", "innovation"
-      ];
-      
+  let extractedSkills = skillKeywords.filter(skill =>
+    cvText.includes(skill)
+  );
 
-    let extractedSkills = skillKeywords.filter(skill =>
-        cvText.includes(skill)
-    );
+  
 
-   
-    let experienceMatch = cvText.match(/(\d+)\s+years?/);
-    let experienceYears = experienceMatch ? parseInt(experienceMatch[1]) : 0;
+  let experienceYears = 0;
 
- 
-    let education = "Unknown";
-    if (cvText.includes("phd")) education = "PhD";
-    else if (cvText.includes("master")) education = "Masters";
-    else if (cvText.includes("bachelor")) education = "Bachelors";
 
-    return {
-        skills: extractedSkills,
-        experienceYears,
-        education
-    };
+  let match1 = cvText.match(/(\d+)\+?\s+years?/);
+  if (match1) {
+    experienceYears = parseInt(match1[1]);
+  }
+
+  
+  let match2 = cvText.match(/(20\d{2})\s*[-–]\s*(20\d{2}|present)/);
+
+  if (match2) {
+    let start = parseInt(match2[1]);
+    let end = match2[2] === "present" ? new Date().getFullYear() : parseInt(match2[2]);
+    experienceYears = Math.max(experienceYears, end - start);
+  }
+
+  
+
+  let education = "Unknown";
+
+  if (cvText.includes("phd") || cvText.includes("doctorate")) {
+    education = "PhD";
+  }
+  else if (
+    cvText.includes("master") ||
+    cvText.includes("m.sc") ||
+    cvText.includes("mtech") ||
+    cvText.includes("m.e")
+  ) {
+    education = "Masters";
+  }
+  else if (
+    cvText.includes("bachelor") ||
+    cvText.includes("b.tech") ||
+    cvText.includes("b.e")
+  ) {
+    education = "Bachelors";
+  }
+
+  return {
+    skills: extractedSkills,
+    experienceYears,
+    education
+  };
 }
 
 function isValidCV(cvText) {
@@ -1091,24 +1108,7 @@ app.get("/upload-cv", isAuthenticated, async (req, res) => {
     const now = new Date(); 
   
    
-    if (!cvText.toLowerCase().includes("sharjah")) {
-      await rejectCV(req.session.user._id, now);
-      return res.redirect("/upload-cv?rejected=true");
-    }
   
-
-    if (!isValidCV(cvText)) {
-      await rejectCV(req.session.user._id, now);
-      return res.redirect("/upload-cv?rejected=true");
-    }
-  
-    
-    const matchPercentage = calculateCVMatchScore(cvText);
-  
-    if (matchPercentage < 55) {  
-      await rejectCV(req.session.user._id, now);
-      return res.redirect("/upload-cv?rejected=true");
-    }
   
     const parsedData = parseCV(cvText);
     const recommendations = generateRecommendations(parsedData);
