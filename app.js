@@ -254,6 +254,12 @@ function parseCV(cvText) {
         "python", "java", "c++", "machine learning",
         "sql", "mongodb", "data structures",
         "tensorflow", "network", "algorithms",
+        "data science",
+  "big data",
+  "spark",
+  "kafka",
+  "geospatial",
+  "recommender",
       
     
         "project management", "agile", "scrum", "leadership",
@@ -1085,7 +1091,7 @@ app.get("/upload-cv", isAuthenticated, async (req, res) => {
     const now = new Date(); 
   
    
-    if (!cvText.toLowerCase().includes("university of sharjah")) {
+    if (!cvText.toLowerCase().includes("sharjah")) {
       await rejectCV(req.session.user._id, now);
       return res.redirect("/upload-cv?rejected=true");
     }
