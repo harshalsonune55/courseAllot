@@ -2,50 +2,86 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>CAS - Course Allocation System</title>
+  <title>CAS — Course Allocation System</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up { animation: fadeUp .55s cubic-bezier(.4,0,.2,1) both; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-10px); }
+    }
+    .float { animation: float 4s ease-in-out infinite; }
+
+    .role-card { transition: transform .2s, box-shadow .2s; }
+    .role-card:hover { transform: translateY(-3px); box-shadow: 0 20px 40px -8px rgba(0,0,0,.18); }
+  </style>
 </head>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 flex items-center justify-center p-4">
 
-<body class="relative flex items-center justify-center min-h-screen bg-cover bg-center"
-      style="background-image: url('/images/opdp.jpg');">
+  <!-- Background grid pattern -->
+  <div class="absolute inset-0 opacity-5" style="background-image: radial-gradient(circle, #fff 1px, transparent 1px); background-size: 32px 32px;"></div>
 
-  
-  <div class="absolute inset-0 bg-black bg-opacity-60 z-0"></div>
+  <div class="relative z-10 w-full max-w-md fade-up">
 
-
-  <div class="relative z-10 bg-white/90 backdrop-blur-md w-[480px] rounded-3xl shadow-2xl p-10 text-center">
-
-
-    <div class="flex justify-center mb-6">
-      <div class="bg-green-800 w-24 h-24 rounded-2xl flex items-center justify-center text-white text-3xl shadow-lg">
-        🎓
+    <!-- Logo -->
+    <div class="flex flex-col items-center mb-10">
+      <div class="float w-20 h-20 bg-white/10 backdrop-blur rounded-2xl flex items-center justify-center ring-2 ring-white/20 shadow-2xl mb-5">
+        <img src="/images/image.png" alt="CAS" class="w-12 h-12 object-contain">
       </div>
+      <h1 class="text-4xl font-bold text-white tracking-tight">CAS</h1>
+      <p class="text-blue-200 text-sm mt-1.5">Course Allocation System</p>
     </div>
 
+    <!-- Role cards -->
+    <div class="space-y-4">
 
-    <h1 class="text-3xl font-bold text-gray-900">CAS</h1>
-    <p class="text-gray-600 mt-2 mb-10 text-lg">
-      Course Allocation System
-    </p>
+      <a href="/faculty-login"
+         class="role-card flex items-center gap-5 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-6 py-5 text-white group">
+        <div class="w-12 h-12 rounded-xl bg-blue-500/30 flex items-center justify-center shrink-0 group-hover:bg-blue-500/50 transition-colors">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+          </svg>
+        </div>
+        <div class="flex-1">
+          <p class="font-semibold text-base">Faculty / Instructor</p>
+          <p class="text-blue-200 text-sm">Upload CV, request course allocations</p>
+        </div>
+        <svg class="w-5 h-5 text-white/50 group-hover:text-white group-hover:translate-x-1 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+        </svg>
+      </a>
 
-   
-    <a href="/faculty-login"
-       class="block bg-blue-950 text-white py-4 rounded-xl text-lg font-medium mb-5 hover:bg-blue-900 transition">
-      👤 Faculty / Instructor →
-    </a>
+      <a href="/hod-login"
+         class="role-card flex items-center gap-5 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-6 py-5 text-white group">
+        <div class="w-12 h-12 rounded-xl bg-green-500/30 flex items-center justify-center shrink-0 group-hover:bg-green-500/50 transition-colors">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+        </div>
+        <div class="flex-1">
+          <p class="font-semibold text-base">Head of Department</p>
+          <p class="text-blue-200 text-sm">Manage faculty, approve allocations</p>
+        </div>
+        <svg class="w-5 h-5 text-white/50 group-hover:text-white group-hover:translate-x-1 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+        </svg>
+      </a>
 
- 
-    <a href="/hod-login"
-       class="block bg-blue-950 text-white py-4 rounded-xl text-lg font-medium hover:bg-blue-900 transition">
-      👥 Head of Department →
-    </a>
+    </div>
 
-    
-    <div class="mt-10 bg-gray-100/70 border rounded-xl py-4 text-gray-700">
-      ✨ AI-powered intelligent matching
+    <!-- Footer tag -->
+    <div class="flex items-center justify-center gap-2 mt-10 text-white/30 text-xs">
+      <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+      </svg>
+      AI-powered intelligent course matching
     </div>
 
   </div>
-
 </body>
 </html>

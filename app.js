@@ -316,6 +316,29 @@ function parseCV(cvText) {
   };
 }
 
+function calculateCVQualityScore(parsedData, cvText) {
+  const text = cvText.toLowerCase();
+  let score = 0;
+
+  // Education level — up to 30 pts
+  if (parsedData.education === "PhD")       score += 30;
+  else if (parsedData.education === "Masters") score += 22;
+  else if (parsedData.education === "Bachelors") score += 15;
+
+  // Skills breadth — up to 30 pts (5 pts each, max 6 skills)
+  score += Math.min(parsedData.skills.length * 5, 30);
+
+  // Experience years — up to 25 pts (5 pts per year, max 5 yrs)
+  score += Math.min(parsedData.experienceYears * 5, 25);
+
+  // CV structure completeness — up to 15 pts
+  const sections = ["education", "experience", "skills", "projects", "certifications", "summary", "objective"];
+  const found = sections.filter(s => text.includes(s)).length;
+  score += Math.min(found * 3, 15);
+
+  return Math.min(score, 100);
+}
+
 function isValidCV(cvText) {
     cvText = cvText.toLowerCase();
   
@@ -601,6 +624,7 @@ app.post("/request-course", isAuthenticated, async (req, res) => {
     res.render("faculty-members", {
       layout: "layouts/hod-layout",
       currentPage: "faculty",
+      hodUser: req.session.user,
       facultyList,
       courses: [
         "Machine Learning",
@@ -641,6 +665,7 @@ app.post("/request-course", isAuthenticated, async (req, res) => {
       layout: "layouts/hod-layout",
       requests,
       currentPage: "allocations",
+      hodUser: req.session.user,
       data: {
         user: {
           name: req.session.user.fullName,
@@ -664,14 +689,43 @@ app.post("/request-course", isAuthenticated, async (req, res) => {
   
     res.render("hod-dashboard", {
       layout: "layouts/hod-layout",
-      requests,               
+      requests,
       currentPage: "dashboard",
+      hodUser: req.session.user,
       data: {
         user: {
           name: req.session.user.fullName,
           role: req.session.user.role
         }
       }
+    });
+  });
+
+  app.get("/hod-my-allotments", isAuthenticated, async (req, res) => {
+    if (req.session.user.role !== "HOD") return res.redirect("/home");
+
+    const allotments = await CourseRequest
+      .find({ status: { $in: ["APPROVED", "HOD_ASSIGNED", "FACULTY_REJECTED"] }, assignedByHOD: true })
+      .populate("faculty")
+      .sort({ updatedAt: -1 });
+
+    res.render("hod-my-allotments", {
+      layout: "layouts/hod-layout",
+      currentPage: "my-allotments",
+      hodUser: req.session.user,
+      allotments,
+      data: { user: { name: req.session.user.fullName, role: req.session.user.role } }
+    });
+  });
+
+  app.get("/hod-semester-view", isAuthenticated, async (req, res) => {
+    if (req.session.user.role !== "HOD") return res.redirect("/home");
+
+    res.render("hod-semester-view", {
+      layout: "layouts/hod-layout",
+      currentPage: "semester-view",
+      hodUser: req.session.user,
+      data: { user: { name: req.session.user.fullName, role: req.session.user.role } }
     });
   });
 
@@ -693,17 +747,50 @@ app.post("/request-course", isAuthenticated, async (req, res) => {
       await CourseRequest.create({
         faculty: facultyId,
         courseName,
-        status: "APPROVED",
-        hodReply: reason || "Assigned manually by HOD",
-        matchScore: 100   
+        status: "HOD_ASSIGNED",
+        assignedByHOD: true,
+        hodReply: reason || "Assigned by HOD",
+        matchScore: 100
       });
-  
+
       res.redirect("/faculty-members");
   
     } catch (err) {
       console.log(err);
       res.send("Error assigning course");
     }
+  });
+
+  app.post("/faculty-accept/:id", isAuthenticated, async (req, res) => {
+    const request = await CourseRequest.findOne({
+      _id: req.params.id,
+      faculty: req.session.user._id,
+      status: "HOD_ASSIGNED"
+    });
+
+    if (!request) return res.redirect("/notifications");
+
+    await CourseRequest.findByIdAndUpdate(req.params.id, {
+      status: "APPROVED"
+    });
+
+    res.redirect("/notifications");
+  });
+
+  app.post("/faculty-reject/:id", isAuthenticated, async (req, res) => {
+    const request = await CourseRequest.findOne({
+      _id: req.params.id,
+      faculty: req.session.user._id,
+      status: "HOD_ASSIGNED"
+    });
+
+    if (!request) return res.redirect("/notifications");
+
+    await CourseRequest.findByIdAndUpdate(req.params.id, {
+      status: "FACULTY_REJECTED"
+    });
+
+    res.redirect("/notifications");
   });
 
   app.post("/reject-with-comment/:id", isAuthenticated, async (req, res) => {
@@ -1038,7 +1125,7 @@ app.get("/notifications", isAuthenticated, async (req, res) => {
 
     const requests = await CourseRequest.find({
       faculty: req.session.user._id,
-      status: { $in: ["APPROVED", "REJECTED"] }
+      status: { $in: ["APPROVED", "REJECTED", "HOD_ASSIGNED", "FACULTY_REJECTED"] }
     }).sort({ updatedAt: -1 });
   
     res.render("notifications", {
@@ -1066,8 +1153,9 @@ app.get("/notifications", isAuthenticated, async (req, res) => {
       );
   
       req.session.user = updatedUser;
-  
-      res.redirect("/home");
+
+      const redirectTo = updatedUser.role === "HOD" ? "/hod-dashboard" : "/home";
+      res.redirect(redirectTo);
     } catch (err) {
       console.error("Update Profile Error:", err);
       res.redirect("/home");
@@ -1112,7 +1200,8 @@ app.get("/upload-cv", isAuthenticated, async (req, res) => {
   
     const parsedData = parseCV(cvText);
     const recommendations = generateRecommendations(parsedData);
-  
+    const cvQualityScore = calculateCVQualityScore(parsedData, cvText);
+
     const updatedUser = await User.findByIdAndUpdate(
       req.session.user._id,
       {
@@ -1120,6 +1209,7 @@ app.get("/upload-cv", isAuthenticated, async (req, res) => {
         experienceYears: parsedData.experienceYears,
         education: parsedData.education,
         recommendedCourses: recommendations,
+        authenticityScore: cvQualityScore,
         cvStatus: "APPROVED",
         cvUploadedAt: now,
         cvReviewedAt: now

@@ -1,90 +1,237 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>HOD Signup</title>
+  <meta charset="UTF-8">
+  <title>HOD Sign Up — CAS</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(16px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    .form-panel { animation: fadeIn .4s cubic-bezier(.4,0,.2,1) both; }
+
+    @keyframes patternFloat {
+      0%, 100% { transform: translate(0,0) rotate(0deg); }
+      50%       { transform: translate(-6px,-8px) rotate(-2deg); }
+    }
+    .deco { animation: patternFloat 7s ease-in-out infinite; }
+  </style>
 </head>
-<body class="relative flex items-center justify-center min-h-screen bg-cover bg-center"
-      style="background-image: url('/images/course_back.jpg');">
-      <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+<body class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
 
-      <div class="relative bg-white/90 backdrop-blur-md w-[380px] rounded-2xl shadow-2xl p-8">
+  <div class="w-full max-w-4xl bg-white rounded-3xl shadow-2xl overflow-hidden flex">
 
+    <!-- ===== LEFT PANEL ===== -->
+    <div class="hidden md:flex flex-col justify-between w-[40%] bg-gradient-to-br from-green-900 to-green-700 p-10 relative overflow-hidden">
+      <div class="deco absolute -top-16 -right-16 w-64 h-64 rounded-full bg-white/5"></div>
+      <div class="absolute bottom-10 -left-20 w-80 h-80 rounded-full bg-white/5"></div>
 
-   
-    <div class="flex justify-center mb-6">
-        <div class="bg-green-800 w-20 h-20 rounded-2xl flex items-center justify-center text-white text-2xl">
-        🏢
+      <div class="relative z-10">
+        <div class="w-12 h-12 bg-white/15 rounded-xl flex items-center justify-center ring-1 ring-white/20 mb-8">
+          <img src="/images/imageco.png" alt="CAS" class="w-8 h-8 object-contain">
+        </div>
+        <h1 class="text-3xl font-bold text-white leading-tight">Register as<br>HOD</h1>
+        <p class="text-green-200 text-sm mt-3 leading-relaxed">Set up your department head account to start managing faculty and course allocations.</p>
+      </div>
+
+      <!-- privileges -->
+      <div class="relative z-10 space-y-3">
+        <p class="text-green-300 text-xs font-semibold uppercase tracking-widest mb-1">HOD Privileges</p>
+        <% [
+          ['Approve / reject faculty requests',    'M5 13l4 4L19 7'],
+          ['Directly assign courses to faculty',  'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2'],
+          ['View semester & allocation reports',  'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'],
+          ['AI-powered department analytics',     'M13 10V3L4 14h7v7l9-11h-7z']
+        ].forEach(([label, path]) => { %>
+          <div class="flex items-center gap-3">
+            <div class="w-6 h-6 rounded-lg bg-white/15 flex items-center justify-center shrink-0">
+              <svg class="w-3.5 h-3.5 text-green-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="<%= path %>"/>
+              </svg>
+            </div>
+            <p class="text-green-100 text-xs"><%= label %></p>
+          </div>
+        <% }); %>
       </div>
     </div>
 
+    <!-- ===== RIGHT FORM PANEL ===== -->
+    <div class="flex-1 flex flex-col justify-center px-8 md:px-12 py-10 form-panel overflow-y-auto">
 
-    <h1 class="text-2xl font-bold text-center mb-1">CAS</h1>
-    <p class="text-center text-gray-500 mb-6 text-sm">
-      Register as Head of Department
-    </p>
-
-    <% if (error) { %>
-      <div class="bg-red-100 text-red-700 p-3 rounded-lg mb-6 text-sm text-center">
-        <%= error %>
-      </div>
-    <% } %>
-
-    <form action="/hod-signup" method="POST">
-
-   
-      <div class="mb-4">
-        <label class="block text-sm font-semibold mb-2">Full Name</label>
-        <input type="text" name="fullName" required
-          class="w-full border-2 border-gray-800 rounded-2xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-900">
+      <div class="flex items-center gap-3 mb-6 md:hidden">
+        <div class="w-9 h-9 bg-green-800 rounded-xl flex items-center justify-center">
+          <img src="/images/imageco.png" alt="" class="w-6 h-6 object-contain">
+        </div>
+        <span class="font-bold text-gray-900">CAS — HOD</span>
       </div>
 
+      <h2 class="text-2xl font-bold text-gray-900 mb-1">Create HOD Account</h2>
+      <p class="text-gray-400 text-sm mb-7">All fields are required</p>
 
-      <div class="mb-4">
-        <label class="block text-sm font-semibold mb-2">Email</label>
-        <input type="email" name="email" required
-          class="w-full border-2 border-gray-800 rounded-2xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-900">
-      </div>
+      <% if (error) { %>
+        <div class="flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm mb-5">
+          <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <%= error %>
+        </div>
+      <% } %>
 
-     
-      <div class="mb-4">
-        <label class="block text-sm font-semibold mb-2">Username</label>
-        <input type="text" name="username" required
-          class="w-full border-2 border-gray-800 rounded-2xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-900">
-      </div>
+      <form action="/hod-signup" method="POST" class="space-y-4" onsubmit="handleSubmit(this)">
 
-   
-      <div class="mb-4">
-        <label class="block text-sm font-semibold mb-2">Password</label>
-        <input type="password" name="password" required
-          class="w-full border-2 border-gray-800 rounded-2xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-900">
-      </div>
+        <!-- Full Name -->
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1.5">Full Name</label>
+          <div class="relative">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+              </svg>
+            </span>
+            <input type="text" name="fullName" required placeholder="Prof. John Doe"
+                   class="w-full border border-gray-200 bg-gray-50 rounded-xl pl-10 pr-4 py-3 text-sm focus:border-green-800 focus:ring-2 focus:ring-green-800/10 focus:bg-white transition-all">
+          </div>
+        </div>
 
+        <!-- Email -->
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1.5">Email</label>
+          <div class="relative">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+              </svg>
+            </span>
+            <input type="email" name="email" required placeholder="hod@university.edu"
+                   class="w-full border border-gray-200 bg-gray-50 rounded-xl pl-10 pr-4 py-3 text-sm focus:border-green-800 focus:ring-2 focus:ring-green-800/10 focus:bg-white transition-all">
+          </div>
+        </div>
 
-      <div class="mb-6">
-        <label class="block text-sm font-semibold mb-2">Confirm Password</label>
-        <input type="password" name="confirmPassword" required
-          class="w-full border-2 border-gray-800 rounded-2xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-900">
-      </div>
+        <!-- Username -->
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1.5">Username</label>
+          <div class="relative">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium text-sm">@</span>
+            <input type="text" name="username" required placeholder="hod_username"
+                   class="w-full border border-gray-200 bg-gray-50 rounded-xl pl-8 pr-4 py-3 text-sm focus:border-green-800 focus:ring-2 focus:ring-green-800/10 focus:bg-white transition-all">
+          </div>
+        </div>
 
+        <!-- Password -->
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1.5">Password</label>
+          <div class="relative">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+              </svg>
+            </span>
+            <input type="password" name="password" id="pwd1" required placeholder="Min. 6 characters"
+                   oninput="checkStrength(this.value)"
+                   class="w-full border border-gray-200 bg-gray-50 rounded-xl pl-10 pr-12 py-3 text-sm focus:border-green-800 focus:ring-2 focus:ring-green-800/10 focus:bg-white transition-all">
+            <button type="button" onclick="togglePwd('pwd1','eye1')"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1">
+              <svg id="eye1" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              </svg>
+            </button>
+          </div>
+          <div class="mt-2 h-1 bg-gray-200 rounded-full overflow-hidden">
+            <div id="strengthBar" class="h-full rounded-full transition-all duration-300" style="width:0%"></div>
+          </div>
+          <p id="strengthLabel" class="text-xs text-gray-400 mt-1"></p>
+        </div>
 
-      <button type="submit"
-        class="w-full bg-blue-950 text-white py-4 rounded-2xl text-sm font-medium hover:bg-blue-900 transition">
-        Create HOD Account
-      </button>
+        <!-- Confirm Password -->
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1.5">Confirm Password</label>
+          <div class="relative">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+              </svg>
+            </span>
+            <input type="password" name="confirmPassword" id="pwd2" required placeholder="Repeat password"
+                   oninput="checkMatch()"
+                   class="w-full border border-gray-200 bg-gray-50 rounded-xl pl-10 pr-12 py-3 text-sm focus:border-green-800 focus:ring-2 focus:ring-green-800/10 focus:bg-white transition-all">
+            <button type="button" onclick="togglePwd('pwd2','eye2')"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1">
+              <svg id="eye2" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              </svg>
+            </button>
+          </div>
+          <p id="matchLabel" class="text-xs mt-1 hidden"></p>
+        </div>
 
-    </form>
+        <button type="submit" id="submitBtn"
+                class="w-full bg-green-800 hover:bg-green-700 text-white font-semibold py-3 rounded-xl transition-all flex items-center justify-center gap-2 text-sm mt-2">
+          Create HOD Account
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </button>
 
+      </form>
 
-    <div class="mt-8 text-center text-gray-600">
-      Already have an account?
-      <a href="/hod-login"
-         class="text-blue-900 font-semibold hover:underline ml-1">
-        Sign In
-      </a>
+      <p class="text-center text-sm text-gray-400 mt-6">
+        Already registered?
+        <a href="/hod-login" class="text-green-800 font-semibold hover:underline ml-1">Sign in</a>
+      </p>
+      <p class="text-center text-xs text-gray-300 mt-2">
+        <a href="/" class="hover:text-gray-500 transition-colors">← Back to role selection</a>
+      </p>
+
     </div>
-
   </div>
 
+  <script>
+    function checkStrength(pwd) {
+      const bar = document.getElementById('strengthBar');
+      const label = document.getElementById('strengthLabel');
+      let score = 0;
+      if (pwd.length >= 6)  score++;
+      if (pwd.length >= 10) score++;
+      if (/[A-Z]/.test(pwd)) score++;
+      if (/[0-9]/.test(pwd)) score++;
+      if (/[^A-Za-z0-9]/.test(pwd)) score++;
+      const map = [['0%','',''],['25%','#ef4444','Weak'],['50%','#f97316','Fair'],['75%','#eab308','Good'],['100%','#16a34a','Strong']];
+      const [w,c,t] = map[Math.min(score, 4)];
+      bar.style.width = w; bar.style.background = c;
+      label.textContent = t; label.style.color = c;
+    }
+
+    function checkMatch() {
+      const p1 = document.getElementById('pwd1').value;
+      const p2 = document.getElementById('pwd2').value;
+      const el = document.getElementById('matchLabel');
+      if (!p2) { el.classList.add('hidden'); return; }
+      el.classList.remove('hidden');
+      if (p1 === p2) { el.textContent = '✓ Passwords match'; el.style.color = '#16a34a'; }
+      else           { el.textContent = '✗ Passwords do not match'; el.style.color = '#ef4444'; }
+    }
+
+    function togglePwd(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      const icon  = document.getElementById(iconId);
+      const show  = input.type === 'password';
+      input.type = show ? 'text' : 'password';
+      icon.innerHTML = show
+        ? `<path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>`
+        : `<path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>`;
+    }
+
+    function handleSubmit(form) {
+      const p1 = document.getElementById('pwd1').value;
+      const p2 = document.getElementById('pwd2').value;
+      if (p1 !== p2) { alert('Passwords do not match'); return false; }
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.innerHTML = `<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg> Creating account…`;
+    }
+  </script>
 </body>
 </html>

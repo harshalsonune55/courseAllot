@@ -10,7 +10,7 @@ const courseRequestSchema = new mongoose.Schema({
       type: String,
       required: true
     },
-    comment: String, 
+    comment: String,
     hodReply: String,
     matchScore: {
       type: Number,
@@ -18,10 +18,14 @@ const courseRequestSchema = new mongoose.Schema({
     },
     status: {
       type: String,
-      enum: ["PENDING", "APPROVED", "REJECTED"],
+      enum: ["PENDING", "APPROVED", "REJECTED", "HOD_ASSIGNED", "FACULTY_REJECTED"],
       default: "PENDING"
+    },
+    assignedByHOD: {
+      type: Boolean,
+      default: false
     }
-  }, { timestamps: true });   
-  
+  }, { timestamps: true });
+
 
 module.exports = mongoose.model("CourseRequest", courseRequestSchema);
