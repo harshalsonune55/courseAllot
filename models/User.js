@@ -42,7 +42,9 @@ const userSchema = new mongoose.Schema({
             score: Number,
             status: { type: String, default: "PENDING" }
         }
-    ]
-});
+    ],
+    preferredCourses: [String],
+    college: String
+}, { timestamps: true });
 
 module.exports = mongoose.model("User", userSchema);

@@ -1,136 +1,158 @@
-<div class="p-10">
+<div class="px-6 md:px-10 py-10 bg-gray-100 min-h-screen">
 
-   
-    <div class="mb-8">
-      <input
-  id="searchInput"
-  type="text"
-  placeholder="Search courses, faculty, allocations..."
-  class="w-full border-2 border-gray-300 rounded-xl px-6 py-4 focus:ring-2 focus:ring-blue-600 focus:outline-none"
-/>
-    </div>
-  
-
-    <h2 class="text-2xl font-bold mb-8">
-      AI Dashboard ✨
-    </h2>
-  
-
-    <div class="grid grid-cols-2 gap-6 mb-10">
-  
-      <div class="bg-green-800 text-white p-8 rounded-2xl">
-        <p class="text-lg">Courses</p>
-        <h3 class="text-3xl font-bold mt-2">
-          <%= requests.length %>
-        </h3>
-      </div>
-  
-      <div class="bg-green-800 text-white p-8 rounded-2xl">
-        <p class="text-lg">Faculty</p>
-        <h3 class="text-3xl font-bold mt-2">
-          <%= new Set(requests.map(r => r.faculty._id.toString())).size %>
-        </h3>
-      </div>
-  
-      <div class="bg-green-800 text-white p-8 rounded-2xl">
-        <p class="text-lg">AI Matches</p>
-        <h3 class="text-3xl font-bold mt-2">
-          <%= requests.length %>
-        </h3>
-      </div>
-  
-      <div class="bg-green-800 text-white p-8 rounded-2xl">
-        <p class="text-lg">Pending</p>
-        <h3 class="text-3xl font-bold mt-2">
-          <%= requests.filter(r => r.status === "PENDING").length %>
-        </h3>
-      </div>
-  
-    </div>
-  
- 
-    <div class="border-2 border-gray-300 rounded-2xl p-8">
-  
-      <h3 class="text-xl font-semibold mb-6">
-        AI Recommendations ✨
-      </h3>
-  
-      <% if (requests.length === 0) { %>
-        <p class="text-gray-600">No allocation requests yet.</p>
-      <% } %>
-  
-      <% requests.forEach(req => { %>
-  
-        <div class="request-card bg-gray-100 rounded-xl p-6 mb-4 flex justify-between items-center">
-  
-          <div>
-            <h4 class="text-lg font-semibold">
-              <%= req.faculty.fullName %> → <%= req.courseName %>
-            </h4>
-  
-            <p class="text-green-700 mt-1">
-              AI: <%= req.matchScore %>%
-            </p>
-          </div>
-  
-  
-          <% if (req.status === "PENDING") { %>
-  
-            <div class="flex gap-4">
-  
-              <form action="/approve/<%= req._id %>" method="POST">
-                <button class="bg-green-700 text-white px-6 py-2 rounded-xl hover:bg-green-800">
-                  ✔ Approve
-                </button>
-              </form>
-  
-              <form action="/reject/<%= req._id %>" method="POST">
-                <button class="bg-gray-600 text-white px-6 py-2 rounded-xl hover:bg-gray-700">
-                  ✖ Reject
-                </button>
-              </form>
-  
-            </div>
-  
-          <% } else if (req.status === "APPROVED") { %>
-  
-            <span class="bg-green-700 text-white px-6 py-2 rounded-full text-sm">
-              APPROVED
-            </span>
-  
-          <% } else { %>
-  
-            <span class="bg-blue-950 text-white px-6 py-2 rounded-full text-sm">
-              REJECTED
-            </span>
-  
-          <% } %>
-  
-        </div>
-  
-      <% }) %>
-  
-    </div>
-  
+  <!-- Search -->
+  <div class="mb-8">
+    <input id="searchInput" type="text"
+           placeholder="Search faculty, courses, allocations..."
+           class="w-full border border-gray-300 rounded-xl px-6 py-4 bg-white focus:ring-2 focus:ring-green-700 focus:outline-none text-sm">
   </div>
 
-  <script>
-    const searchInput = document.getElementById("searchInput");
-  
-    searchInput.addEventListener("keyup", function () {
-      const value = this.value.toLowerCase();
-  
-      const cards = document.querySelectorAll(".request-card");
-  
-      cards.forEach(card => {
-        const text = card.innerText.toLowerCase();
-  
-        if (text.includes(value)) {
-          card.style.display = "flex";
-        } else {
-          card.style.display = "none";
-        }
-      });
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h2 class="text-2xl font-bold text-gray-900">HOD Dashboard</h2>
+      <p class="text-sm text-gray-500 mt-0.5">Overview of allocations, faculty, and colleges</p>
+    </div>
+    <span class="text-xs text-gray-400 bg-white border border-gray-200 px-4 py-2 rounded-xl">Academic Year 2024–25</span>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-5 mb-10">
+
+    <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+      <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center mb-3">
+        <svg class="w-5 h-5 text-blue-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+      </div>
+      <p class="text-xs text-gray-400 font-medium uppercase tracking-wide">Total Requests</p>
+      <h3 class="text-3xl font-bold text-gray-900 mt-1"><%= requests.length %></h3>
+    </div>
+
+    <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+      <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center mb-3">
+        <svg class="w-5 h-5 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+      </div>
+      <p class="text-xs text-gray-400 font-medium uppercase tracking-wide">Faculty Members</p>
+      <h3 class="text-3xl font-bold text-gray-900 mt-1"><%= facultyCount %></h3>
+    </div>
+
+    <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+      <div class="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center mb-3">
+        <svg class="w-5 h-5 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </div>
+      <p class="text-xs text-gray-400 font-medium uppercase tracking-wide">Pending</p>
+      <h3 class="text-3xl font-bold text-gray-900 mt-1"><%= requests.filter(r => r.status === "PENDING").length %></h3>
+    </div>
+
+    <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+      <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center mb-3">
+        <svg class="w-5 h-5 text-purple-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+        </svg>
+      </div>
+      <p class="text-xs text-gray-400 font-medium uppercase tracking-wide">Total Courses</p>
+      <h3 class="text-3xl font-bold text-gray-900 mt-1"><%= totalCourses %></h3>
+    </div>
+
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+
+    <!-- Recent Allocations -->
+    <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-200 shadow-sm">
+      <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-100">
+        <h3 class="font-bold text-gray-900">Recent Requests</h3>
+        <a href="/hod-allocations" class="text-sm text-green-800 hover:underline font-medium">View all &rarr;</a>
+      </div>
+      <div class="divide-y divide-gray-50">
+        <% if (requests.length === 0) { %>
+          <p class="px-6 py-8 text-sm text-gray-400">No allocation requests yet.</p>
+        <% } %>
+        <% requests.slice(0, 6).forEach(req => { %>
+          <div class="request-card px-6 py-4 flex items-center justify-between gap-4 hover:bg-gray-50 transition">
+            <div class="min-w-0">
+              <p class="font-medium text-gray-800 text-sm truncate"><%= req.faculty.fullName %> &rarr; <%= req.courseName %></p>
+              <p class="text-xs text-green-700 mt-0.5">AI: <%= req.matchScore %>%</p>
+            </div>
+            <% if (req.status === "PENDING") { %>
+              <div class="flex gap-2 shrink-0">
+                <form action="/approve/<%= req._id %>" method="POST">
+                  <button class="bg-green-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-green-800">Approve</button>
+                </form>
+                <form action="/reject/<%= req._id %>" method="POST">
+                  <button class="bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-gray-300">Reject</button>
+                </form>
+              </div>
+            <% } else if (req.status === "APPROVED") { %>
+              <span class="shrink-0 bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full">Approved</span>
+            <% } else { %>
+              <span class="shrink-0 bg-gray-100 text-gray-600 text-xs font-semibold px-3 py-1 rounded-full"><%= req.status %></span>
+            <% } %>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+
+    <!-- Notifications Panel -->
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm">
+      <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-100">
+        <h3 class="font-bold text-gray-900">Notifications</h3>
+        <a href="/hod-notifications" class="text-sm text-green-800 hover:underline font-medium">All &rarr;</a>
+      </div>
+      <div class="divide-y divide-gray-50">
+        <% if (hodNotifications.length === 0) { %>
+          <p class="px-6 py-8 text-sm text-gray-400">No new notifications.</p>
+        <% } %>
+        <% hodNotifications.forEach(n => { %>
+          <div class="px-6 py-4">
+            <% if (n.status === "FACULTY_REJECTED") { %>
+              <p class="text-sm font-medium text-red-700"><%= n.faculty ? n.faculty.fullName : 'Faculty' %> declined a course</p>
+              <p class="text-xs text-gray-500 mt-0.5"><%= n.courseName %></p>
+              <% if (n.rejectionReason) { %>
+                <p class="text-xs text-gray-400 mt-1 italic">"<%= n.rejectionReason %>"</p>
+              <% } %>
+            <% } else { %>
+              <p class="text-sm font-medium text-gray-800">New request: <%= n.courseName %></p>
+              <p class="text-xs text-gray-500 mt-0.5"><%= n.faculty ? n.faculty.fullName : '—' %></p>
+            <% } %>
+            <p class="text-xs text-gray-300 mt-1"><%= n.updatedAt ? new Date(n.updatedAt).toLocaleDateString('en-GB', {day:'2-digit', month:'short'}) : '' %></p>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Colleges Overview -->
+  <div class="bg-white rounded-2xl border border-gray-200 shadow-sm">
+    <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-100">
+      <h3 class="font-bold text-gray-900">Colleges Overview</h3>
+      <a href="/hod-colleges" class="text-sm text-green-800 hover:underline font-medium">View details &rarr;</a>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 divide-y md:divide-y-0 md:divide-x divide-gray-100">
+      <% colleges.forEach(college => { %>
+        <div class="px-6 py-5">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-br <%= college.color %> mb-3"></div>
+          <p class="font-semibold text-gray-800 text-sm leading-tight"><%= college.name %></p>
+          <p class="text-xs text-gray-500 mt-1">Dean: <%= college.dean %></p>
+          <p class="text-xs text-gray-400 mt-1"><%= college.departments.length %> departments</p>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  document.getElementById("searchInput").addEventListener("keyup", function () {
+    const value = this.value.toLowerCase();
+    document.querySelectorAll(".request-card").forEach(card => {
+      card.style.display = card.innerText.toLowerCase().includes(value) ? "flex" : "none";
     });
-  </script>
-  
+  });
+</script>

@@ -1,0 +1,2 @@
+- [Project Overview](memory/project_overview.md) — CAS Course Allocation System, Node/Express/MongoDB/EJS/Tailwind
+- [User Preferences](memory/user_prefs.md) — User role, working style

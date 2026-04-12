@@ -12,10 +12,88 @@ const pdfParse = require("pdf-parse");
 const fs = require("fs");
 const CourseRequest = require("./models/CourseRequest");
 
-
-
-
 const User = require("./models/User");
+
+// ─── Static Data ──────────────────────────────────────────────────────────────
+
+const COLLEGES = [
+  {
+    name: "College of Sciences",
+    dean: "Prof. Nouar Tabet",
+    color: "from-sky-700 to-sky-500",
+    departments: ["Applied Biology", "Chemistry", "Physics", "Mathematics"]
+  },
+  {
+    name: "College of Computing and Informatics",
+    dean: "Prof. Abbes Amira",
+    color: "from-blue-900 to-blue-700",
+    departments: ["Computer Engineering", "Information Systems", "Computer Science"]
+  },
+  {
+    name: "College of Engineering",
+    dean: "Prof. Abdul Mohammad",
+    color: "from-orange-700 to-orange-500",
+    departments: ["Electrical Engineering", "Mechanical", "Industrial", "Civil"]
+  },
+  {
+    name: "College of Business Administration",
+    dean: "Prof. Ilhan Ozturk",
+    color: "from-green-800 to-green-600",
+    departments: ["Accounting", "Management", "Finance & Economics"]
+  }
+];
+
+const MULTIMEDIA_COURSES = {
+  fall: [
+    "Problem Solving", "Graphic Design", "Introduction to IT", "Calculus I",
+    "Arabic Language", "English for Academic Purposes", "Programming with Data Structures",
+    "Design & Authoring", "Islamic Culture", "UAE Society", "Critical Reading & Writing",
+    "Intro to Database Management Systems", "Introduction to Artificial Intelligence",
+    "Web Programming", "2D/3D Computer Animation", "MM Program Elective 1",
+    "Project Management", "Game Design & Development", "Development of Web Applications",
+    "Information Security", "MM Senior Project"
+  ],
+  spring: [
+    "Programming I", "Interactive Multimedia", "College Requirement",
+    "University Elective I", "University Elective II",
+    "OO Software Design & Implementation", "MM Programming",
+    "Principals of Marketing", "Statistics for Sciences", "Statistics Lab",
+    "Fundamentals of Innovation & Entrepreneurship", "Networking Fundamentals",
+    "Human Computer Interaction", "Interactive 3D Design", "MM Junior Project",
+    "CO OP Summer Training", "IT Applications in E-commerce",
+    "MM Program Elective 2", "MM Program Elective 3", "MM Program Elective 4"
+  ]
+};
+
+const CS_COURSES = {
+  fall: [
+    "Physics I for Sciences", "Physics I Lab", "Introduction to IT", "Calculus I",
+    "Arabic Language", "English for Academic Purposes", "Programming II",
+    "Digital Logic Design", "Islamic Culture", "Discrete Structures",
+    "Introduction to Probability & Statistics",
+    "Fundamentals of Innovation & Entrepreneurship",
+    "Intro to Database Management Systems", "Design & Analysis of Algorithms",
+    "Introduction to Artificial Intelligence", "Software Engineering",
+    "Critical Reading & Writing", "Issues in CS", "Information Security",
+    "Cloud Computing", "Senior Project in CS"
+  ],
+  spring: [
+    "Programming I", "General Chemistry I", "General Chemistry I Lab", "Calculus II",
+    "University Elective 1", "University Elective 2", "Data Structures",
+    "OO Design with Java", "Digital Logic Design Lab",
+    "Computer Organization & Assembly Language", "Linear Algebra",
+    "UAE Society", "Programming Languages & Paradigms", "Operating Systems",
+    "Networking Fundamentals", "Formal Languages & Automata",
+    "Junior Project in CS", "CO OP Summer Training",
+    "Dept. Specialized Elective 1", "Dept. Specialized Elective 2",
+    "Dept. Specialized Elective 3", "Dept. Specialized Elective 4"
+  ]
+};
+
+const ALL_COURSES = [...new Set([
+  ...MULTIMEDIA_COURSES.fall, ...MULTIMEDIA_COURSES.spring,
+  ...CS_COURSES.fall, ...CS_COURSES.spring
+])];
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -616,23 +694,19 @@ app.post("/request-course", isAuthenticated, async (req, res) => {
     if (req.session.user.role !== "HOD") {
       return res.redirect("/home");
     }
-  
+
     const facultyList = await User.find({
       role: { $regex: /^faculty$/i }
     });
-  
+
     res.render("faculty-members", {
       layout: "layouts/hod-layout",
       currentPage: "faculty",
       hodUser: req.session.user,
       facultyList,
-      courses: [
-        "Machine Learning",
-        "Data Structures",
-        "Database Management",
-        "Computer Networks",
-        "Project Management"
-      ],
+      courses: ALL_COURSES,
+      multimediaCourses: MULTIMEDIA_COURSES,
+      csCourses: CS_COURSES,
       data: {
         user: {
           name: req.session.user.fullName,
@@ -643,9 +717,9 @@ app.post("/request-course", isAuthenticated, async (req, res) => {
   });
 
 
-  app.get("/update-profile", (req, res) => {
+  app.get("/update-profile", isAuthenticated, (req, res) => {
     res.render("update-profile", {
-      data: { user: req.user }   
+      data: { user: req.session.user }
     });
   });
   
@@ -682,16 +756,29 @@ app.post("/request-course", isAuthenticated, async (req, res) => {
     if (req.session.user.role !== "HOD") {
       return res.redirect("/home");
     }
-  
+
     const requests = await CourseRequest
       .find()
-      .populate("faculty");   
-  
+      .populate("faculty");
+
+    const facultyCount = await User.countDocuments({ role: { $regex: /^faculty$/i } });
+
+    // HOD notifications: faculty rejections and new pending requests
+    const hodNotifications = await CourseRequest
+      .find({ status: { $in: ["FACULTY_REJECTED", "PENDING"] } })
+      .populate("faculty")
+      .sort({ updatedAt: -1 })
+      .limit(5);
+
     res.render("hod-dashboard", {
       layout: "layouts/hod-layout",
       requests,
       currentPage: "dashboard",
       hodUser: req.session.user,
+      colleges: COLLEGES,
+      facultyCount,
+      hodNotifications,
+      totalCourses: ALL_COURSES.length,
       data: {
         user: {
           name: req.session.user.fullName,
@@ -721,10 +808,15 @@ app.post("/request-course", isAuthenticated, async (req, res) => {
   app.get("/hod-semester-view", isAuthenticated, async (req, res) => {
     if (req.session.user.role !== "HOD") return res.redirect("/home");
 
+    const facultyList = await User.find({ role: { $regex: /^faculty$/i } });
+
     res.render("hod-semester-view", {
       layout: "layouts/hod-layout",
       currentPage: "semester-view",
       hodUser: req.session.user,
+      multimediaCourses: MULTIMEDIA_COURSES,
+      csCourses: CS_COURSES,
+      facultyList,
       data: { user: { name: req.session.user.fullName, role: req.session.user.role } }
     });
   });
@@ -786,8 +878,11 @@ app.post("/request-course", isAuthenticated, async (req, res) => {
 
     if (!request) return res.redirect("/notifications");
 
+    const { rejectionReason } = req.body;
+
     await CourseRequest.findByIdAndUpdate(req.params.id, {
-      status: "FACULTY_REJECTED"
+      status: "FACULTY_REJECTED",
+      rejectionReason: rejectionReason || ""
     });
 
     res.redirect("/notifications");
@@ -1008,32 +1103,33 @@ app.post("/hod-signup", async (req, res) => {
 
 app.get("/home", isAuthenticated, async (req, res) => {
 
-    const user = req.session.user;
-  
-   
-    const requests = await CourseRequest.find({
-      faculty: user._id
-    });
-  
+    const user = await User.findById(req.session.user._id);
+    req.session.user = user;
+
+    const requests = await CourseRequest.find({ faculty: user._id });
+
     const approved = requests.filter(r => r.status === "APPROVED").length;
-    const pending = requests.filter(r => r.status === "PENDING").length;
-    const rejected = requests.filter(r => r.status === "REJECTED").length;
-  
+    const pending  = requests.filter(r => r.status === "PENDING").length;
+
+    // AI match = average of top-3 recommended course scores
+    const recScores = (user.recommendedCourses || []).map(r => r.score);
+    const aiMatch = recScores.length
+      ? Math.round(recScores.slice(0, 3).reduce((s, v) => s + v, 0) / Math.min(recScores.length, 3))
+      : 0;
+
+    const cvUploaded = user.cvStatus === "APPROVED";
+
     res.render("dashboard", {
       data: {
-        user: {
-          name: user.fullName,
-          role: user.role
-        },
+        user: { name: user.fullName, role: user.role },
         stats: {
-          skills: user.skills ? user.skills.length : 0,
-          experience: user.experienceYears || 0,
-          education: user.education || "Not Found",
           approvedCourses: approved,
-          pendingRequests: pending
+          pendingRequests: pending,
+          aiMatch,
+          cvUploaded
         },
         recommendations: user.recommendedCourses || [],
-        requests: requests
+        requests
       },
       currentPage: "dashboard"
     });
@@ -1098,13 +1194,12 @@ app.post("/reset-password", async (req, res) => {
 
 app.get("/allocations", isAuthenticated, async (req, res) => {
 
-    const user = req.session.user;
-  
+    const user = await User.findById(req.session.user._id);
 
     const requests = await CourseRequest.find({
       faculty: user._id
     });
-  
+
     res.render("allocations", {
       data: {
         user: {
@@ -1112,7 +1207,10 @@ app.get("/allocations", isAuthenticated, async (req, res) => {
           role: user.role
         },
         recommendations: user.recommendedCourses || [],
-        requests: requests
+        requests: requests,
+        allCourses: ALL_COURSES,
+        multimediaCourses: MULTIMEDIA_COURSES,
+        csCourses: CS_COURSES
       },
       currentPage: "allocations"
     });
@@ -1273,6 +1371,71 @@ app.get("/upload-cv", isAuthenticated, async (req, res) => {
   
 
 
+
+// HOD Notifications
+app.get("/hod-notifications", isAuthenticated, async (req, res) => {
+  if (req.session.user.role !== "HOD") return res.redirect("/home");
+
+  const notifications = await CourseRequest
+    .find({ status: { $in: ["FACULTY_REJECTED", "PENDING", "APPROVED"] } })
+    .populate("faculty")
+    .sort({ updatedAt: -1 });
+
+  res.render("hod-notifications", {
+    layout: "layouts/hod-layout",
+    currentPage: "hod-notifications",
+    hodUser: req.session.user,
+    notifications,
+    data: { user: { name: req.session.user.fullName, role: req.session.user.role } }
+  });
+});
+
+// HOD Colleges & Departments
+app.get("/hod-colleges", isAuthenticated, async (req, res) => {
+  if (req.session.user.role !== "HOD") return res.redirect("/home");
+
+  res.render("hod-colleges", {
+    layout: "layouts/hod-layout",
+    currentPage: "hod-colleges",
+    hodUser: req.session.user,
+    colleges: COLLEGES,
+    data: { user: { name: req.session.user.fullName, role: req.session.user.role } }
+  });
+});
+
+// Faculty Preferences
+app.get("/preferences", isAuthenticated, async (req, res) => {
+  if (req.session.user.role === "HOD") return res.redirect("/hod-dashboard");
+
+  const user = await User.findById(req.session.user._id);
+
+  res.render("preferences", {
+    currentPage: "preferences",
+    data: {
+      user: { name: user.fullName, role: user.role },
+      preferredCourses: user.preferredCourses || [],
+      recommendations: user.recommendedCourses || []
+    },
+    allCourses: ALL_COURSES,
+    multimediaCourses: MULTIMEDIA_COURSES,
+    csCourses: CS_COURSES
+  });
+});
+
+app.post("/update-preferences", isAuthenticated, async (req, res) => {
+  let selected = req.body.preferredCourses;
+  if (!selected) selected = [];
+  if (!Array.isArray(selected)) selected = [selected];
+
+  const updatedUser = await User.findByIdAndUpdate(
+    req.session.user._id,
+    { preferredCourses: selected },
+    { returnDocument: "after" }
+  );
+
+  req.session.user = updatedUser;
+  res.redirect("/preferences");
+});
 
 app.get("/logout", (req, res) => {
     req.session.destroy(() => {

@@ -1,176 +1,292 @@
-<div class="p-10">
+<div class="px-6 md:px-10 py-10 bg-gray-100 min-h-screen">
 
+  <!-- Search -->
+  <div class="mb-8">
+    <input id="searchFaculty" type="text"
+           placeholder="Search faculty, email, department..."
+           class="w-full border border-gray-300 rounded-xl px-6 py-4 bg-white focus:ring-2 focus:ring-green-700 focus:outline-none text-sm">
+  </div>
 
-    <div class="mb-8">
-      <input
-  id="searchFaculty"
-  type="text"
-  placeholder="Search faculty, email, course..."
-  class="w-full border-2 border-gray-300 rounded-xl px-6 py-4 focus:ring-2 focus:ring-blue-600 focus:outline-none"
-/>
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-8">
+    <div>
+      <h2 class="text-2xl font-bold text-gray-900">Faculty Members</h2>
+      <p class="text-sm text-gray-500 mt-0.5"><%= facultyList.length %> member<%= facultyList.length !== 1 ? 's' : '' %> registered</p>
     </div>
-  
+    <a href="/add-faculty"
+       class="bg-blue-950 text-white px-5 py-2.5 rounded-xl font-medium text-sm hover:bg-blue-900 transition inline-flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+      </svg>
+      Add Faculty
+    </a>
+  </div>
 
-    <div class="flex justify-between items-center mb-8">
-      <div>
-        <h2 class="text-3xl font-bold">Faculty Members</h2>
-        <p class="text-gray-600">Browse faculty by department</p>
-      </div>
-  
-      <a href="/add-faculty"
-   class="bg-blue-950 text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-900 inline-block">
-  + Add Faculty
-</a>
-    </div>
-  
+  <!-- Faculty Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
 
-    <div class="bg-gray-100 border rounded-xl p-4 mb-8">
-      <h3 class="text-xl font-semibold">
-        Computer Science - <%= facultyList.length %> Faculty Members
-      </h3>
-    </div>
-  
+    <% facultyList.forEach(faculty => { %>
 
-    <div class="grid grid-cols-2 gap-8">
-  
-      <% facultyList.forEach(faculty => { %>
-  
-        <div class="faculty-card bg-white border-2 border-gray-800 rounded-2xl p-6">
-  
-          <div class="flex items-center gap-6">
-  
-            <div class="bg-blue-950 w-20 h-20 rounded-full flex items-center justify-center text-white text-2xl">
-              👤
+      <%
+        const aiMatch = faculty.authenticityScore || 0;
+        const cvOk    = faculty.cvStatus === 'APPROVED';
+        const topRec  = faculty.recommendedCourses && faculty.recommendedCourses.length > 0
+                          ? faculty.recommendedCourses[0]
+                          : null;
+        const prefs   = faculty.preferredCourses || [];
+      %>
+
+      <div class="faculty-card bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition">
+
+        <!-- Card top band -->
+        <div class="h-2 bg-gradient-to-r from-blue-900 to-blue-700"></div>
+
+        <div class="p-6">
+
+          <!-- Avatar + info -->
+          <div class="flex items-start gap-4 mb-4">
+            <div class="w-14 h-14 bg-blue-950 rounded-xl flex items-center justify-center text-white text-xl font-bold shrink-0">
+              <%= faculty.fullName.charAt(0).toUpperCase() %>
             </div>
-  
-            <div>
-              <h4 class="text-xl font-bold"><%= faculty.fullName %></h4>
-              <p class="text-gray-600"><%= faculty.email %></p>
-  
-              <div class="mt-3 flex gap-3 flex-wrap">
-  
-                <% if (faculty.recommendedCourses && faculty.recommendedCourses.length > 0) { %>
-  
-                  <span class="bg-blue-950 text-white px-3 py-1 rounded-lg text-sm">
-                    <%= faculty.recommendedCourses[0].course %>
-                  </span>
-  
-                  <span class="bg-green-700 text-white px-3 py-1 rounded-lg text-sm">
-                    CV Verified ✓
-                  </span>
-  
-                <% } else { %>
-  
-                  <span class="bg-gray-400 text-white px-3 py-1 rounded-lg text-sm">
-                    CV Not Uploaded
-                  </span>
-  
-                <% } %>
-  
-              </div>
-  
+            <div class="min-w-0 flex-1">
+              <h4 class="font-bold text-gray-900 leading-tight truncate"><%= faculty.fullName %></h4>
+              <p class="text-xs text-gray-500 mt-0.5 truncate"><%= faculty.email %></p>
+              <p class="text-xs text-gray-400 mt-0.5"><%= faculty.department || 'No department' %></p>
             </div>
-  
           </div>
-          <div class="mt-6">
-            <button 
-              onclick="openAssignModal('<%= faculty._id %>', '<%= faculty.fullName %>')"
-              class="w-full bg-blue-950 text-white py-2 rounded-xl hover:bg-blue-900">
-              ✨ Assign Course
+
+          <!-- Stats row -->
+          <div class="flex items-center gap-2 flex-wrap mb-4">
+            <span class="text-xs font-medium px-2.5 py-1 rounded-full <%= cvOk ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' %>">
+              CV <%= cvOk ? 'Uploaded' : 'Not Uploaded' %>
+            </span>
+            <% if (aiMatch > 0) { %>
+              <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-blue-100 text-blue-800">
+                AI Score: <%= aiMatch %>%
+              </span>
+            <% } %>
+            <% if (topRec) { %>
+              <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-purple-100 text-purple-700 truncate max-w-[140px]">
+                Top: <%= topRec.course %>
+              </span>
+            <% } %>
+          </div>
+
+          <!-- Preferred courses preview -->
+          <% if (prefs.length > 0) { %>
+            <div class="mb-4">
+              <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Preferred Courses</p>
+              <div class="flex flex-wrap gap-1.5">
+                <% prefs.slice(0, 3).forEach(p => { %>
+                  <span class="text-xs bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded-lg"><%= p %></span>
+                <% }) %>
+                <% if (prefs.length > 3) { %>
+                  <span class="text-xs text-gray-400">+<%= prefs.length - 3 %> more</span>
+                <% } %>
+              </div>
+            </div>
+          <% } %>
+
+          <!-- Actions -->
+          <div class="flex gap-2">
+            <button onclick="openFacultyDetail('<%= faculty._id %>')"
+                    class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold py-2.5 rounded-xl transition">
+              View Details
+            </button>
+            <button onclick="openAssignModal('<%= faculty._id %>', '<%= faculty.fullName.replace(/'/g, "\\'") %>')"
+                    class="flex-1 bg-blue-950 hover:bg-blue-900 text-white text-xs font-semibold py-2.5 rounded-xl transition">
+              Assign Course
             </button>
           </div>
-  
+
         </div>
-  
-      <% }) %>
-  
-    </div>
-  
+      </div>
+
+    <% }) %>
+
   </div>
-  <div id="assignModal"
-     class="fixed inset-0 bg-black/40 flex items-center justify-center hidden z-50">
 
-  <div class="bg-white w-[500px] rounded-2xl p-8 shadow-xl">
+</div>
 
-    <h2 class="text-2xl font-bold mb-6">Assign Course</h2>
+<!-- ===== ASSIGN COURSE MODAL ===== -->
+<div id="assignModal"
+     class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center hidden z-50"
+     onclick="if(event.target===this)closeAssignModal()">
 
-    <p class="mb-4 text-gray-600">
-      Assigning to: <span id="facultyName" class="font-semibold"></span>
-    </p>
+  <div class="bg-white w-[520px] rounded-2xl shadow-2xl overflow-hidden">
+    <div class="px-6 pt-6 pb-4 border-b border-gray-100">
+      <h3 class="text-lg font-bold text-gray-900">Assign Course</h3>
+      <p class="text-sm text-gray-500 mt-0.5">Assigning to: <span id="assignFacultyName" class="font-semibold text-gray-800"></span></p>
+    </div>
 
-    <form action="/assign-course" method="POST" class="space-y-4">
-
+    <form action="/assign-course" method="POST" class="px-6 py-5 space-y-4">
       <input type="hidden" name="facultyId" id="facultyIdInput">
 
       <div>
-        <label class="block mb-2">Course Name</label>
-        <select name="courseName"
-  class="w-full border-2 border-gray-300 px-4 py-3 rounded-xl"
-  required>
-
-  <option value="">-- Select Course --</option>
-
-  <% courses.forEach(course => { %>
-    <option value="<%= course %>"><%= course %></option>
-  <% }) %>
-
-</select>
+        <label class="block text-sm font-medium text-gray-700 mb-1.5">Course</label>
+        <select name="courseName" id="assignCourseSelect" required
+                class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-700 bg-white">
+          <option value="">— Select Course —</option>
+        </select>
       </div>
 
       <div>
-        <label class="block mb-2">Reason (Optional)</label>
-        <textarea name="reason"
-          class="w-full border-2 border-gray-300 px-4 py-3 rounded-xl"
-          placeholder="Why assigning this course..."></textarea>
+        <label class="block text-sm font-medium text-gray-700 mb-1.5">Note to Faculty <span class="text-gray-400 font-normal">(optional)</span></label>
+        <textarea name="reason" rows="3" placeholder="e.g. Your expertise aligns well with this course."
+                  class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-700 resize-none"></textarea>
       </div>
 
-      <div class="flex gap-4 mt-6">
+      <div class="flex gap-3 pt-1">
         <button type="button" onclick="closeAssignModal()"
-          class="w-1/2 border py-3 rounded-xl">
+                class="flex-1 border border-gray-300 text-gray-700 py-3 rounded-xl text-sm font-medium hover:bg-gray-50 transition">
           Cancel
         </button>
-
         <button type="submit"
-          class="w-1/2 bg-blue-950 text-white py-3 rounded-xl">
+                class="flex-1 bg-blue-950 text-white py-3 rounded-xl text-sm font-semibold hover:bg-blue-900 transition">
           Assign
         </button>
       </div>
-
     </form>
-
   </div>
 </div>
 
-  <script>
-    const searchInput = document.getElementById("searchFaculty");
-  
-    searchInput.addEventListener("keyup", function () {
-      const value = this.value.toLowerCase();
-  
-      const cards = document.querySelectorAll(".faculty-card");
-  
-      cards.forEach(card => {
-        const text = card.innerText.toLowerCase();
-  
-        if (text.includes(value)) {
-          card.style.display = "block"; 
-        } else {
-          card.style.display = "none";
-        }
+<!-- ===== FACULTY DETAIL MODAL ===== -->
+<div id="facultyDetailModal"
+     class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center hidden z-50"
+     onclick="if(event.target===this)closeFacultyDetail()">
+  <div class="bg-white w-[560px] max-h-[80vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+    <div class="px-6 pt-6 pb-4 border-b border-gray-100 shrink-0 flex items-center justify-between">
+      <h3 class="text-lg font-bold text-gray-900" id="detailName"></h3>
+      <button onclick="closeFacultyDetail()" class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition">
+        <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <div class="overflow-y-auto flex-1 px-6 py-4 space-y-5" id="detailBody"></div>
+  </div>
+</div>
+
+<!-- Embed faculty data for JS -->
+<script>
+  const FACULTY_DATA = <%- JSON.stringify(facultyList.map(f => ({
+    _id: f._id,
+    fullName: f.fullName,
+    email: f.email,
+    department: f.department || '',
+    cvStatus: f.cvStatus,
+    authenticityScore: f.authenticityScore || 0,
+    skills: f.skills || [],
+    experienceYears: f.experienceYears || 0,
+    education: f.education || '',
+    recommendedCourses: f.recommendedCourses || [],
+    preferredCourses: f.preferredCourses || []
+  }))) %>;
+
+  const ALL_COURSES_LIST = <%- JSON.stringify(courses) %>;
+
+  function openAssignModal(id, name) {
+    document.getElementById('facultyIdInput').value = id;
+    document.getElementById('assignFacultyName').innerText = name;
+
+    // Build a grouped course select
+    const sel = document.querySelector('#assignModal select[name="courseName"]');
+    sel.innerHTML = '<option value="">— Select Course —</option>';
+
+    const mmFall   = <%- JSON.stringify(multimediaCourses ? multimediaCourses.fall : []) %>;
+    const mmSpring = <%- JSON.stringify(multimediaCourses ? multimediaCourses.spring : []) %>;
+    const csFall   = <%- JSON.stringify(csCourses ? csCourses.fall : []) %>;
+    const csSpring = <%- JSON.stringify(csCourses ? csCourses.spring : []) %>;
+
+    const groups = [
+      { label: 'Multimedia — Fall',   list: mmFall   },
+      { label: 'Multimedia — Spring', list: mmSpring },
+      { label: 'CS — Fall',           list: csFall   },
+      { label: 'CS — Spring',         list: csSpring }
+    ];
+
+    groups.forEach(g => {
+      const og = document.createElement('optgroup');
+      og.label = g.label;
+      g.list.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c; opt.textContent = c;
+        og.appendChild(opt);
       });
+      sel.appendChild(og);
     });
-  </script>
-  <script>
-    const assignModal = document.getElementById("assignModal");
-  
-    function openAssignModal(id, name) {
-      document.getElementById("facultyIdInput").value = id;
-      document.getElementById("facultyName").innerText = name;
-  
-      assignModal.classList.remove("hidden");
+
+    document.getElementById('assignModal').classList.remove('hidden');
+  }
+
+  function closeAssignModal() {
+    document.getElementById('assignModal').classList.add('hidden');
+  }
+
+  function openFacultyDetail(id) {
+    const f = FACULTY_DATA.find(x => x._id.toString() === id.toString());
+    if (!f) return;
+
+    document.getElementById('detailName').innerText = f.fullName;
+
+    let html = '';
+
+    // Basic info
+    html += `<div class="grid grid-cols-2 gap-3 text-sm">
+      <div class="bg-gray-50 rounded-xl p-4"><p class="text-xs text-gray-400 font-medium uppercase tracking-wide mb-1">Email</p><p class="font-medium text-gray-800">${f.email}</p></div>
+      <div class="bg-gray-50 rounded-xl p-4"><p class="text-xs text-gray-400 font-medium uppercase tracking-wide mb-1">Department</p><p class="font-medium text-gray-800">${f.department || '—'}</p></div>
+      <div class="bg-gray-50 rounded-xl p-4"><p class="text-xs text-gray-400 font-medium uppercase tracking-wide mb-1">Education</p><p class="font-medium text-gray-800">${f.education || '—'}</p></div>
+      <div class="bg-gray-50 rounded-xl p-4"><p class="text-xs text-gray-400 font-medium uppercase tracking-wide mb-1">Experience</p><p class="font-medium text-gray-800">${f.experienceYears} years</p></div>
+    </div>`;
+
+    // Skills
+    if (f.skills.length > 0) {
+      html += `<div><p class="text-sm font-semibold text-gray-700 mb-2">Skills</p><div class="flex flex-wrap gap-1.5">`;
+      f.skills.forEach(s => { html += `<span class="text-xs bg-blue-50 text-blue-800 border border-blue-200 px-2 py-0.5 rounded-lg">${s}</span>`; });
+      html += `</div></div>`;
     }
-  
-    function closeAssignModal() {
-      assignModal.classList.add("hidden");
+
+    // AI Recommendations
+    if (f.recommendedCourses.length > 0) {
+      html += `<div><p class="text-sm font-semibold text-gray-700 mb-2">AI Recommendations</p><div class="space-y-2">`;
+      f.recommendedCourses.slice(0, 5).forEach(r => {
+        const pct = r.score;
+        const color = pct >= 70 ? 'bg-green-500' : pct >= 40 ? 'bg-yellow-400' : 'bg-gray-300';
+        html += `<div class="flex items-center justify-between gap-3">
+          <span class="text-sm text-gray-800 flex-1 truncate">${r.course}</span>
+          <div class="flex items-center gap-2">
+            <div class="w-20 h-1.5 bg-gray-200 rounded-full overflow-hidden"><div class="${color} h-full rounded-full" style="width:${pct}%"></div></div>
+            <span class="text-xs font-semibold text-gray-600 w-10 text-right">${pct}%</span>
+          </div>
+        </div>`;
+      });
+      html += `</div></div>`;
     }
-  </script>
+
+    // Preferred courses
+    if (f.preferredCourses.length > 0) {
+      html += `<div><p class="text-sm font-semibold text-gray-700 mb-2">Preferred Courses <span class="text-purple-600">(Faculty Choice)</span></p><div class="flex flex-wrap gap-1.5">`;
+      f.preferredCourses.forEach(p => { html += `<span class="text-xs bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded-lg">${p}</span>`; });
+      html += `</div></div>`;
+    }
+
+    if (f.recommendedCourses.length === 0 && f.preferredCourses.length === 0) {
+      html += `<div class="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-xl p-4 text-sm">No CV uploaded. AI match not available.</div>`;
+    }
+
+    document.getElementById('detailBody').innerHTML = html;
+    document.getElementById('facultyDetailModal').classList.remove('hidden');
+  }
+
+  function closeFacultyDetail() {
+    document.getElementById('facultyDetailModal').classList.add('hidden');
+  }
+
+  // Search
+  document.getElementById("searchFaculty").addEventListener("keyup", function () {
+    const value = this.value.toLowerCase();
+    document.querySelectorAll(".faculty-card").forEach(card => {
+      card.style.display = card.innerText.toLowerCase().includes(value) ? "" : "none";
+    });
+  });
+</script>

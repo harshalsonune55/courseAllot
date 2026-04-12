@@ -24,6 +24,10 @@ const courseRequestSchema = new mongoose.Schema({
     assignedByHOD: {
       type: Boolean,
       default: false
+    },
+    rejectionReason: {
+      type: String,
+      default: ""
     }
   }, { timestamps: true });
 

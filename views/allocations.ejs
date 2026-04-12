@@ -178,18 +178,47 @@
 
       <div class="mb-8">
         <label class="block text-lg font-medium mb-3">Select Course</label>
-    
+
         <select name="courseName" id="courseSelect"
           class="w-full border-2 border-blue-600 rounded-2xl px-6 py-4 text-lg focus:outline-none"
           required>
-    
+
           <option value="">-- Select Course --</option>
-          <% data.recommendations.forEach(course => { %>
-            <option value="<%= course.course %>">
-              <%= course.course %> (<%= course.score %>% Match)
-            </option>
-          <% }) %>
-    
+
+          <% if (data.recommendations && data.recommendations.length > 0) { %>
+            <optgroup label="AI Recommended">
+              <% data.recommendations.forEach(course => { %>
+                <option value="<%= course.course %>"><%= course.course %> (<%= course.score %>% AI Match)</option>
+              <% }) %>
+            </optgroup>
+          <% } %>
+
+          <% if (data.multimediaCourses) { %>
+            <optgroup label="Multimedia — Fall">
+              <% data.multimediaCourses.fall.forEach(c => { %>
+                <option value="<%= c %>"><%= c %></option>
+              <% }) %>
+            </optgroup>
+            <optgroup label="Multimedia — Spring">
+              <% data.multimediaCourses.spring.forEach(c => { %>
+                <option value="<%= c %>"><%= c %></option>
+              <% }) %>
+            </optgroup>
+          <% } %>
+
+          <% if (data.csCourses) { %>
+            <optgroup label="Computer Science — Fall">
+              <% data.csCourses.fall.forEach(c => { %>
+                <option value="<%= c %>"><%= c %></option>
+              <% }) %>
+            </optgroup>
+            <optgroup label="Computer Science — Spring">
+              <% data.csCourses.spring.forEach(c => { %>
+                <option value="<%= c %>"><%= c %></option>
+              <% }) %>
+            </optgroup>
+          <% } %>
+
         </select>
       </div>
     
